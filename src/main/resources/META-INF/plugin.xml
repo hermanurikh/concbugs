@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>com.qbutton.concbugs</id>
+    <name>Concurrency Bugs Analyser</name>
+    <vendor email="herman.urikh@aengel.com">German Urikh</vendor>
+
+    <description><![CDATA[
+        This plugin performs static code analysis and searches for concurrency-related bugs.
+
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <inspectionToolProvider implementation="com.qbutton.concbugs.ConcBugsProvider"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
