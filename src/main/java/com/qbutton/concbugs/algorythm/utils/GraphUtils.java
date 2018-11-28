@@ -1,5 +1,6 @@
 package com.qbutton.concbugs.algorythm.utils;
 
+import com.google.common.collect.Sets;
 import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
@@ -37,13 +38,17 @@ public final class GraphUtils {
 
         //if this is a replace, not a remove operation, put a new node
         if (needToReplace) {
-            neighbors.put(newHo, oldEdges);
+            //a merge is needed because this node might already be in the set
+            neighbors.merge(newHo, oldEdges, (oldObjects, newObjects) -> new HashSet<>(Sets.union(oldEdges, newObjects)));
+            //ensure there is no self-link
+            neighbors.get(newHo).remove(newHo);
         }
 
         //remove connections to this node and add new, if it is a replace operation
-        neighbors.values().forEach(edges -> {
+        neighbors.forEach((node, edges) -> {
             boolean wasPresent = edges.remove(oldHO);
-            if (wasPresent && needToReplace) {
+            //do not allow self-link - we cannot obtain the lock twice
+            if (wasPresent && needToReplace && newHo != node) {
                 edges.add(newHo);
             }
         });
@@ -51,6 +56,48 @@ public final class GraphUtils {
         Set<HeapObject> updatedRoots = new HashSet<>(roots);
         if (updatedRoots.remove(oldHO) && needToReplace) {
             updatedRoots.add(newHo);
+        }
+
+        return new ReplaceNodeResult(updatedGraph, updatedRoots);
+    }
+
+    /**
+     * Splice out the node.
+     * For each incoming edge, draw a new edge to each of children (outcoming edges).
+     * If roots contained this object, replace it with all reachable (outgoing) objects.
+     * @param graph graph
+     * @param roots roots
+     * @param oldHO node to splice out
+     * @return result of splicing out
+     */
+    public static ReplaceNodeResult spliceOutNode(Graph graph,
+                                                  Set<HeapObject> roots,
+                                                  HeapObject oldHO) {
+        Graph updatedGraph = graph.clone();
+        Map<HeapObject, Set<HeapObject>> neighbors = updatedGraph.getNeighbors();
+
+        //remove node itself
+        Set<HeapObject> oldEdges = neighbors.remove(oldHO);
+
+        if (oldEdges == null) {
+            throw new AlgorithmValidationException(
+                    String.format("graph %s does not contain heapObject %s, it cannot be spliced out", graph, oldHO));
+        }
+
+        //remove edges to this node. If there was one, replace node with all outgoing edges
+        neighbors.forEach((node, edges) -> {
+            boolean wasPresent = edges.remove(oldHO);
+            if (wasPresent) {
+                edges.addAll(oldEdges);
+            }
+
+            //ensure there is no self-link
+            edges.remove(node);
+        });
+
+        Set<HeapObject> updatedRoots = new HashSet<>(roots);
+        if (updatedRoots.remove(oldHO)) {
+            updatedRoots.addAll(oldEdges);
         }
 
         return new ReplaceNodeResult(updatedGraph, updatedRoots);
