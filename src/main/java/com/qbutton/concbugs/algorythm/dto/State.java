@@ -3,7 +3,6 @@ package com.qbutton.concbugs.algorythm.dto;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,6 +34,6 @@ public class State {
     private final Graph graph;
     private final Set<HeapObject> roots;
     private final List<HeapObject> locks;
-    private final Map<String, HeapObject> environment;
+    private final List<EnvEntry> environment;
     private final Set<HeapObject> waits;
 }

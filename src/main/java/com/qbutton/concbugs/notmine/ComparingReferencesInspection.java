@@ -24,6 +24,7 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.util.IncorrectOperationException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +36,7 @@ import java.util.StringTokenizer;
 /**
  * @author max
  */
+@SuppressFBWarnings(justification = "this class is not used yet, saved for future reasons")
 public class ComparingReferencesInspection extends BaseJavaLocalInspectionTool {
   private static final Logger LOG = Logger.getInstance("#com.intellij.codeInspection.ComparingReferencesInspection");
 

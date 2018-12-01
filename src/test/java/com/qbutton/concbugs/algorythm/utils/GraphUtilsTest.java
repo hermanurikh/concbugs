@@ -37,6 +37,7 @@ class GraphUtilsTest {
                 ho1 -> ho3
                 ho3 -> ho2
                 ho3 -> ho1
+                ho2 -> 0
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
             HeapObject ho1 = new HeapObject(point1, Integer.class);
@@ -49,7 +50,8 @@ class GraphUtilsTest {
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
-                    ho3, ImmutableSet.of(ho2, ho1)
+                    ho3, ImmutableSet.of(ho2, ho1),
+                    ho2, Collections.emptySet()
             );
 
             Graph initialGraph = new Graph(graphMap);
@@ -58,12 +60,17 @@ class GraphUtilsTest {
             Graph graph = GraphUtils.removeObject(initialGraph, ho1);
 
             //then
-            //ho3 -> ho2 is the only remaining edge
+            /*
+                ho3 -> ho2
+                ho2 -> 0
+            */
             Map<HeapObject, Set<HeapObject>> neighbors = graph.getNeighbors();
-            assertThat(neighbors.size(), is(1));
+            assertThat(neighbors.size(), is(2));
             assertTrue(neighbors.containsKey(ho3));
             assertThat(neighbors.get(ho3).size(), is(1));
             assertThat(neighbors.get(ho3).iterator().next(), is(ho2));
+            assertTrue(neighbors.containsKey(ho2));
+            assertThat(neighbors.get(ho2).size(), is(0));
         }
 
         @Test
@@ -97,6 +104,7 @@ class GraphUtilsTest {
                 ho1 -> ho3
                 ho3 -> ho2
                 ho3 -> ho1
+                ho2 -> 0
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
             HeapObject ho1 = new HeapObject(point1, Integer.class);
@@ -112,7 +120,8 @@ class GraphUtilsTest {
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
-                    ho3, ImmutableSet.of(ho2, ho1)
+                    ho3, ImmutableSet.of(ho2, ho1),
+                    ho2, Collections.emptySet()
             );
 
             Graph initialGraph = new Graph(graphMap);
@@ -127,17 +136,20 @@ class GraphUtilsTest {
                 ho4 -> ho3
                 ho3 -> ho2
                 ho3 -> ho4
+                ho2 -> 0
             */
             Map<HeapObject, Set<HeapObject>> neighbors = replaceNodeResult.getGraph().getNeighbors();
-            assertThat(neighbors.size(), is(2));
+            assertThat(neighbors.size(), is(3));
             assertTrue(neighbors.containsKey(ho3));
             assertTrue(neighbors.containsKey(ho4));
+            assertTrue(neighbors.containsKey(ho2));
             assertThat(neighbors.get(ho3).size(), is(2));
             assertTrue(neighbors.get(ho3).contains(ho2));
             assertTrue(neighbors.get(ho3).contains(ho4));
             assertThat(neighbors.get(ho4).size(), is(2));
             assertTrue(neighbors.get(ho4).contains(ho2));
             assertTrue(neighbors.get(ho4).contains(ho3));
+            assertThat(neighbors.get(ho2).size(), is(0));
 
             Set<HeapObject> updatedRoots = replaceNodeResult.getRoots();
             assertThat(updatedRoots.size(), is(2));
