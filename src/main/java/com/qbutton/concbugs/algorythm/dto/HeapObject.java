@@ -7,7 +7,7 @@ import lombok.Data;
  * Heap object - a combination of program point and variable class.
  */
 @Data
-public class HeapObject implements Cloneable {
+public final class HeapObject implements Cloneable {
     private final ProgramPoint programPoint;
     private final Class<?> clazz;
 

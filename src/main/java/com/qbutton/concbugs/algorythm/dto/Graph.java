@@ -12,7 +12,7 @@ import java.util.Set;
  * Graph - directed graph of heap objects.
  */
 @Data
-public class Graph implements Cloneable {
+public final class Graph implements Cloneable {
     private final Map<HeapObject, Set<HeapObject>> neighbors;
 
     @SuppressFBWarnings("CN_IDIOM_NO_SUPER_CALL")

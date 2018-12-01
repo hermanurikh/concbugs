@@ -3,7 +3,7 @@ package com.qbutton.concbugs.algorythm.dto;
 import lombok.Data;
 
 @Data
-public class EnvEntry {
+public final class EnvEntry {
     private final String varName;
     private final HeapObject heapObject;
 }

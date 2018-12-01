@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
  * Program point - a combination of variable name and line number.
  */
 @Data
-public class ProgramPoint implements Cloneable {
+public final class ProgramPoint implements Cloneable {
     private final String variableName;
     private final int lineNumber;
 
