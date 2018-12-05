@@ -1,11 +1,13 @@
 package com.qbutton.concbugs.algorythm.processor;
 
+import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.SequentialStatement;
 
 final class SequentialStatementProcessor extends AbstractStatementProcessor<SequentialStatement> {
 
     @Override
-    void process(SequentialStatement statement) {
+    State process(SequentialStatement statement, State originalState) {
         //TODO
+        return null;
     }
 }
