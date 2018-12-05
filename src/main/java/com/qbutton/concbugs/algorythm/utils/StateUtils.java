@@ -20,26 +20,38 @@ public final class StateUtils {
 
     public static State renameFromCalleeToCallerContext(State returnedMethodState, State currentState) {
 
-        List<HeapObject> formalParameters = returnedMethodState.getEnvironment()
-                .stream()
-                .map(EnvEntry::getHeapObject)
-                .collect(toList());
-        List<HeapObject> actualParameters = currentState.getEnvironment()
-                .stream()
-                .map(EnvEntry::getHeapObject)
-                .collect(toList());
+        List<HeapObject> formalParameters = getMethodParameters(returnedMethodState);
+        List<HeapObject> actualParameters = getMethodParameters(currentState);
 
-        if (formalParameters.size() != actualParameters.size()) {
-            throw new AlgorithmValidationException("formal and actual method parameters should have same size");
-        }
+        validateMethodParams(formalParameters, actualParameters);
 
-        Graph currentCalleeGraph = returnedMethodState.getGraph();
-        Set<HeapObject> currentCalleeRoots = returnedMethodState.getRoots();
+        ReplaceNodeResult replaceNodeResult =
+                mergeGraphsAndRoots(returnedMethodState, currentState, formalParameters, actualParameters);
+
+        Set<HeapObject> newWaitSet = mergeWaits(returnedMethodState, formalParameters, actualParameters);
+
+        return new State(
+                replaceNodeResult.getGraph(),
+                replaceNodeResult.getRoots(),
+                returnedMethodState.getLocks(),
+                returnedMethodState.getEnvironment(),
+                newWaitSet
+        );
+    }
+
+    private static ReplaceNodeResult mergeGraphsAndRoots(State returnedMethodState,
+                                                         State currentState,
+                                                         List<HeapObject> formalParameters,
+                                                         List<HeapObject> actualParameters) {
+        ReplaceNodeResult replaceNodeResult =
+                new ReplaceNodeResult(returnedMethodState.getGraph(), returnedMethodState.getRoots());
 
         //for all objects locked by the callee
-        for (HeapObject lockedHeapObject : currentCalleeGraph.getNeighbors().keySet()) {
+        for (HeapObject lockedHeapObject : replaceNodeResult.getGraph().getNeighbors().keySet()) {
+            Graph currentCalleeGraph = replaceNodeResult.getGraph();
+            Set<HeapObject> currentCalleeRoots = replaceNodeResult.getRoots();
+
             int index = formalParameters.indexOf(lockedHeapObject);
-            ReplaceNodeResult replaceNodeResult;
             if (index >= 0) {
                 //object is formal parameter of callee method
 
@@ -57,11 +69,14 @@ public final class StateUtils {
                 replaceNodeResult = replaceNode(
                         currentCalleeGraph, currentCalleeRoots, lockedHeapObject, new HeapObject(ProgramPoint.UNKNOWN, lockedHeapObject.getClazz()));
             }
-
-            currentCalleeGraph = replaceNodeResult.getGraph();
-            currentCalleeRoots = replaceNodeResult.getRoots();
         }
 
+        return replaceNodeResult;
+    }
+
+    private static Set<HeapObject> mergeWaits(State returnedMethodState,
+                                              List<HeapObject> formalParameters,
+                                              List<HeapObject> actualParameters) {
         Set<HeapObject> newWaitSet = new HashSet<>();
         returnedMethodState.getWaits().forEach(wait -> {
             int index = formalParameters.indexOf(wait);
@@ -72,14 +87,20 @@ public final class StateUtils {
                 newWaitSet.add(new HeapObject(ProgramPoint.UNKNOWN, wait.getClazz()));
             }
         });
+        return newWaitSet;
+    }
 
-        return new State(
-                currentCalleeGraph,
-                currentCalleeRoots,
-                returnedMethodState.getLocks(),
-                returnedMethodState.getEnvironment(),
-                newWaitSet
-        );
+    private static List<HeapObject> getMethodParameters(State returnedMethodState) {
+        return returnedMethodState.getEnvironment()
+                .stream()
+                .map(EnvEntry::getHeapObject)
+                .collect(toList());
+    }
+
+    private static void validateMethodParams(List<HeapObject> formalParameters, List<HeapObject> actualParameters) {
+        if (formalParameters.size() != actualParameters.size()) {
+            throw new AlgorithmValidationException("formal and actual method parameters should have same size");
+        }
     }
 
     private StateUtils() {
