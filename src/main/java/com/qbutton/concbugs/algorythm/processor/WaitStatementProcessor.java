@@ -34,18 +34,9 @@ final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatem
         if (currentLocks.isEmpty()) {
             newWaits.add(heapObject);
         } else {
-
             HeapObject lastLock = currentLocks.get(currentLocks.size() - 1);
             if (!lastLock.equals(heapObject)) {
-                // wait releases then reacquires heapObject, new lock ordering
-
-                //add object itself
-                newGraphMap.put(heapObject, Collections.emptySet());
-                //draw edge to this object from latest lock
-                if (!newGraphMap.containsKey(lastLock)) {
-                    throw new AlgorithmValidationException("GraphMap is expected to contain lock object, but it does not: " + newGraphMap);
-                }
-                newGraphMap.get(lastLock).add(heapObject);
+                addObjectToGraph(heapObject, newGraphMap, lastLock);
             }
         }
 
@@ -56,5 +47,19 @@ final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatem
                 ImmutableList.copyOf(originalState.getEnvironment()),
                 newWaits
         );
+    }
+
+    private void addObjectToGraph(HeapObject heapObject, Map<HeapObject, Set<HeapObject>> newGraphMap, HeapObject lastLock) {
+        // wait releases then reacquires heapObject, new lock ordering
+
+        //add object itself
+        newGraphMap.put(heapObject, Collections.emptySet());
+        //draw edge to this object from latest lock
+        if (!newGraphMap.containsKey(lastLock)) {
+            throw new AlgorithmValidationException("GraphMap is expected to contain lock object, but it does not: " + newGraphMap);
+        }
+        Set<HeapObject> heapObjects = new HashSet<>(newGraphMap.get(lastLock));
+        heapObjects.add(heapObject);
+        newGraphMap.put(lastLock, heapObjects);
     }
 }
