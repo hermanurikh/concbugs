@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.Sets;
 import com.qbutton.concbugs.algorythm.dto.Graph;
@@ -11,16 +11,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public final class GraphUtils {
+public final class GraphService {
 
-    public static Graph removeObject(Graph graph, HeapObject heapObject) {
+    public Graph removeObject(Graph graph, HeapObject heapObject) {
 
         ReplaceNodeResult replaceNodeResult = replaceNode(graph, Collections.emptySet(), heapObject, null);
 
         return replaceNodeResult.graph;
     }
 
-    public static ReplaceNodeResult replaceNode(Graph graph,
+    public ReplaceNodeResult replaceNode(Graph graph,
                                                 Set<HeapObject> roots,
                                                 HeapObject oldHO,
                                                 HeapObject newHo) {
@@ -70,7 +70,7 @@ public final class GraphUtils {
      * @param oldHO node to splice out
      * @return result of splicing out
      */
-    public static ReplaceNodeResult spliceOutNode(Graph graph,
+    public ReplaceNodeResult spliceOutNode(Graph graph,
                                                   Set<HeapObject> roots,
                                                   HeapObject oldHO) {
         Graph updatedGraph = graph.clone();
@@ -107,8 +107,5 @@ public final class GraphUtils {
     public static class ReplaceNodeResult {
         private final Graph graph;
         private final Set<HeapObject> roots;
-    }
-
-    private GraphUtils() {
     }
 }

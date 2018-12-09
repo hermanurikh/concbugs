@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -23,8 +23,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("MergeUtils class")
-class MergeUtilsTest {
+@DisplayName("MergeService class")
+class MergeServiceTest {
+
+    private final MergeService mergeService = new MergeService();
 
     @Test
     @DisplayName("merges graphs correctly")
@@ -67,7 +69,7 @@ class MergeUtilsTest {
         ));
 
         //when
-        Graph merged = MergeUtils.mergeGraphs(g1, g2);
+        Graph merged = mergeService.mergeGraphs(g1, g2);
 
         //then
         /* should be
@@ -121,7 +123,7 @@ class MergeUtilsTest {
             );
 
             //when
-            List<EnvEntry> mergedEnv = MergeUtils.mergeEnvs(env1, env2, 14);
+            List<EnvEntry> mergedEnv = mergeService.mergeEnvs(env1, env2, 14);
 
             //then
             assertThat(mergedEnv.size(), is(2));
@@ -158,7 +160,7 @@ class MergeUtilsTest {
             //when
             //then
             assertThrows(AlgorithmValidationException.class,
-                    () -> MergeUtils.mergeEnvs(env1, env2, 30));
+                    () -> mergeService.mergeEnvs(env1, env2, 30));
         }
     }
 
@@ -169,7 +171,7 @@ class MergeUtilsTest {
         @Test
         @DisplayName("correctly when first and second have common non-object class")
         void findLowestSuperClass_commonSuperClass() {
-            Class<?> lowestSuperClass = MergeUtils.findLowestSuperClass(Integer.class, Double.class);
+            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Integer.class, Double.class);
 
             assertSame(lowestSuperClass, Number.class);
         }
@@ -177,7 +179,7 @@ class MergeUtilsTest {
         @Test
         @DisplayName("correctly when first is a subclass of second")
         void findLowestSuperClass_firstDerivableFromSecond() {
-            Class<?> lowestSuperClass = MergeUtils.findLowestSuperClass(Integer.class, Number.class);
+            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Integer.class, Number.class);
 
             assertSame(lowestSuperClass, Number.class);
         }
@@ -185,7 +187,7 @@ class MergeUtilsTest {
         @Test
         @DisplayName("correctly when second is a subclass of first")
         void findLowestSuperClass_secondDerivableFromFirst() {
-            Class<?> lowestSuperClass = MergeUtils.findLowestSuperClass(Number.class, Integer.class);
+            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Number.class, Integer.class);
 
             System.out.println(Integer.class.isAssignableFrom(Number.class));
 
@@ -195,7 +197,7 @@ class MergeUtilsTest {
         @Test
         @DisplayName("correctly when classes have only Object as superclass")
         void findLowestSuperClass_notDerivableClasses() {
-            Class<?> lowestSuperClass = MergeUtils.findLowestSuperClass(String.class, Integer.class);
+            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(String.class, Integer.class);
 
             assertSame(lowestSuperClass, Object.class);
         }
@@ -203,7 +205,7 @@ class MergeUtilsTest {
         @Test
         @DisplayName("correctly when classes are just the same")
         void findLowestSuperClass_sameClasses() {
-            Class<?> lowestSuperClass = MergeUtils.findLowestSuperClass(String.class, String.class);
+            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(String.class, String.class);
 
             assertSame(lowestSuperClass, String.class);
         }

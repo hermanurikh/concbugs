@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -20,8 +20,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("GraphUtils class")
-class GraphUtilsTest {
+@DisplayName("GraphService class")
+class GraphServiceTest {
+
+    private final GraphService graphService = new GraphService();
 
     @Nested
     @DisplayName("removes object from graph")
@@ -57,7 +59,7 @@ class GraphUtilsTest {
             Graph initialGraph = new Graph(graphMap);
 
             //when
-            Graph graph = GraphUtils.removeObject(initialGraph, ho1);
+            Graph graph = graphService.removeObject(initialGraph, ho1);
 
             //then
             /*
@@ -82,7 +84,7 @@ class GraphUtilsTest {
             //when
             //then
             assertThrows(AlgorithmValidationException.class,
-                    () -> GraphUtils.removeObject(initialGraph,
+                    () -> graphService.removeObject(initialGraph,
                             new HeapObject(
                                     new ProgramPoint("any", 5),
                                     Integer.class
@@ -128,7 +130,7 @@ class GraphUtilsTest {
             Set<HeapObject> roots = ImmutableSet.of(ho1, ho2);
 
             //when
-            GraphUtils.ReplaceNodeResult replaceNodeResult = GraphUtils.replaceNode(initialGraph, roots, ho1, ho4);
+            GraphService.ReplaceNodeResult replaceNodeResult = graphService.replaceNode(initialGraph, roots, ho1, ho4);
 
             //then
             /*
@@ -186,7 +188,7 @@ class GraphUtilsTest {
             Set<HeapObject> roots = ImmutableSet.of(ho1, ho2);
 
             //when
-            GraphUtils.ReplaceNodeResult replaceNodeResult = GraphUtils.replaceNode(initialGraph, roots, ho3, ho1);
+            GraphService.ReplaceNodeResult replaceNodeResult = graphService.replaceNode(initialGraph, roots, ho3, ho1);
 
             //then
             /*
@@ -233,7 +235,7 @@ class GraphUtilsTest {
             Set<HeapObject> roots = ImmutableSet.of(ho1, ho2);
 
             //when
-            GraphUtils.ReplaceNodeResult replaceNodeResult = GraphUtils.replaceNode(initialGraph, roots, ho1, null);
+            GraphService.ReplaceNodeResult replaceNodeResult = graphService.replaceNode(initialGraph, roots, ho1, null);
 
             //then
             //ho3 -> ho2 is the only remaining edge
@@ -257,7 +259,7 @@ class GraphUtilsTest {
             //when
             //then
             assertThrows(AlgorithmValidationException.class,
-                    () -> GraphUtils.replaceNode(
+                    () -> graphService.replaceNode(
                             initialGraph,
                             emptySet(),
                             new HeapObject(
@@ -306,7 +308,7 @@ class GraphUtilsTest {
             Set<HeapObject> roots = ImmutableSet.of(ho2);
 
             //when
-            GraphUtils.ReplaceNodeResult replaceNodeResult = GraphUtils.spliceOutNode(initialGraph, roots, ho2);
+            GraphService.ReplaceNodeResult replaceNodeResult = graphService.spliceOutNode(initialGraph, roots, ho2);
 
             //then
             /*
@@ -362,7 +364,7 @@ class GraphUtilsTest {
             Set<HeapObject> roots = ImmutableSet.of(ho2);
 
             //when
-            GraphUtils.ReplaceNodeResult replaceNodeResult = GraphUtils.spliceOutNode(initialGraph, roots, ho2);
+            GraphService.ReplaceNodeResult replaceNodeResult = graphService.spliceOutNode(initialGraph, roots, ho2);
 
             //then
             /*
@@ -386,7 +388,7 @@ class GraphUtilsTest {
             //given
             Graph graph = new Graph(Collections.emptyMap());
             assertThrows(AlgorithmValidationException.class,
-                    () -> GraphUtils.spliceOutNode(
+                    () -> graphService.spliceOutNode(
                             graph,
                             Collections.emptySet(),
                             new HeapObject(

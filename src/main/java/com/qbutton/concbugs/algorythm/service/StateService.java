@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.qbutton.concbugs.algorythm.dto.EnvEntry;
 import com.qbutton.concbugs.algorythm.dto.Graph;
@@ -6,19 +6,21 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
-import com.qbutton.concbugs.algorythm.utils.GraphUtils.ReplaceNodeResult;
+import com.qbutton.concbugs.algorythm.service.GraphService.ReplaceNodeResult;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.qbutton.concbugs.algorythm.utils.GraphUtils.replaceNode;
-import static com.qbutton.concbugs.algorythm.utils.GraphUtils.spliceOutNode;
 import static java.util.stream.Collectors.toList;
 
-public final class StateUtils {
+@RequiredArgsConstructor
+public final class StateService {
 
-    public static State renameFromCalleeToCallerContext(State returnedMethodState, State currentState) {
+    private final GraphService graphService;
+
+    public State renameFromCalleeToCallerContext(State returnedMethodState, State currentState) {
 
         List<HeapObject> formalParameters = getMethodParameters(returnedMethodState);
         List<HeapObject> actualParameters = getMethodParameters(currentState);
@@ -39,7 +41,7 @@ public final class StateUtils {
         );
     }
 
-    private static ReplaceNodeResult mergeGraphsAndRoots(State returnedMethodState,
+    private ReplaceNodeResult mergeGraphsAndRoots(State returnedMethodState,
                                                          State currentState,
                                                          List<HeapObject> formalParameters,
                                                          List<HeapObject> actualParameters) {
@@ -57,16 +59,16 @@ public final class StateUtils {
 
                 if (currentState.getLocks().contains(actualParameters.get(index))) {
                     //object was locked by caller, remove object from callee graph
-                    replaceNodeResult = spliceOutNode(
+                    replaceNodeResult = graphService.spliceOutNode(
                             currentCalleeGraph, currentCalleeRoots, lockedHeapObject);
                 } else {
                     //caller did not lock object, rename object to actual arg
-                    replaceNodeResult = replaceNode(
+                    replaceNodeResult = graphService.replaceNode(
                             currentCalleeGraph, currentCalleeRoots, lockedHeapObject, actualParameters.get(index));
                 }
             } else {
                 //object is not from caller, replace object with bottom program point
-                replaceNodeResult = replaceNode(
+                replaceNodeResult = graphService.replaceNode(
                         currentCalleeGraph, currentCalleeRoots, lockedHeapObject, new HeapObject(ProgramPoint.UNKNOWN, lockedHeapObject.getClazz()));
             }
         }
@@ -74,7 +76,7 @@ public final class StateUtils {
         return replaceNodeResult;
     }
 
-    private static Set<HeapObject> mergeWaits(State returnedMethodState,
+    private Set<HeapObject> mergeWaits(State returnedMethodState,
                                               List<HeapObject> formalParameters,
                                               List<HeapObject> actualParameters) {
         Set<HeapObject> newWaitSet = new HashSet<>();
@@ -90,19 +92,16 @@ public final class StateUtils {
         return newWaitSet;
     }
 
-    private static List<HeapObject> getMethodParameters(State returnedMethodState) {
+    private List<HeapObject> getMethodParameters(State returnedMethodState) {
         return returnedMethodState.getEnvironment()
                 .stream()
                 .map(EnvEntry::getHeapObject)
                 .collect(toList());
     }
 
-    private static void validateMethodParams(List<HeapObject> formalParameters, List<HeapObject> actualParameters) {
+    private void validateMethodParams(List<HeapObject> formalParameters, List<HeapObject> actualParameters) {
         if (formalParameters.size() != actualParameters.size()) {
             throw new AlgorithmValidationException("formal and actual method parameters should have same size");
         }
-    }
-
-    private StateUtils() {
     }
 }

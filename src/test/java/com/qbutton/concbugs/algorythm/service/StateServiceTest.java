@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -25,8 +25,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("StateUtils class")
-class StateUtilsTest {
+@DisplayName("stateService class")
+class StateServiceTest {
+
+    private final StateService stateService = new StateService(new GraphService());
 
     @Nested
     @DisplayName("merges graphs and roots when merging states")
@@ -55,7 +57,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             assertThat(state.getGraph().getNeighbors().size(), is(0));
@@ -88,7 +90,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             assertThat(state.getGraph().getNeighbors().size(), is(1));
@@ -122,7 +124,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             HeapObject expected = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
@@ -172,7 +174,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             /*
@@ -225,7 +227,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             assertThat(state.getWaits().size(), is(1));
@@ -254,7 +256,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             assertThat(state.getWaits().size(), is(1));
@@ -285,7 +287,7 @@ class StateUtilsTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
             assertThat(state.getWaits().size(), is(2));
@@ -310,6 +312,6 @@ class StateUtilsTest {
         //when
         //then
         assertThrows(AlgorithmValidationException.class,
-                () -> StateUtils.renameFromCalleeToCallerContext(returnedMethodState, currentState));
+                () -> stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState));
     }
 }

@@ -1,4 +1,4 @@
-package com.qbutton.concbugs.algorythm.utils;
+package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.Sets;
 import com.qbutton.concbugs.algorythm.dto.EnvEntry;
@@ -15,9 +15,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class MergeUtils {
+public final class MergeService {
 
-    public static Graph mergeGraphs(Graph g1, Graph g2) {
+    public Graph mergeGraphs(Graph g1, Graph g2) {
         Graph updatedGraph = g1.clone();
 
         g2.getNeighbors().forEach((node, edges) ->
@@ -26,7 +26,7 @@ public final class MergeUtils {
         return updatedGraph;
     }
 
-    public static State mergeStates(State s1, State s2, int lineNumber) {
+    public State mergeStates(State s1, State s2, int lineNumber) {
         Graph mergedGraph = mergeGraphs(s1.getGraph(), s2.getGraph());
         Set<HeapObject> mergedRoots = Sets.union(s1.getRoots(), s2.getRoots());
 
@@ -55,7 +55,7 @@ public final class MergeUtils {
      * @param lineNumber line number where merge happens
      * @return merged environment
      */
-    public static List<EnvEntry> mergeEnvs(List<EnvEntry> env1,
+    public List<EnvEntry> mergeEnvs(List<EnvEntry> env1,
                                            List<EnvEntry> env2,
                                            int lineNumber) {
         Set<String> env1Keys = getKeys(env1);
@@ -90,17 +90,13 @@ public final class MergeUtils {
     }
 
     @NotNull
-    private static Set<String> getKeys(List<EnvEntry> env) {
+    private Set<String> getKeys(List<EnvEntry> env) {
         return env.stream().map(EnvEntry::getVarName).collect(Collectors.toSet());
     }
 
-    public static Class<?> findLowestSuperClass(Class<?> class1, Class<?> class2) {
+    public Class<?> findLowestSuperClass(Class<?> class1, Class<?> class2) {
         while (!class1.isAssignableFrom(class2))
             class1 = class1.getSuperclass();
         return class1;
-    }
-
-
-    private MergeUtils() {
     }
 }
