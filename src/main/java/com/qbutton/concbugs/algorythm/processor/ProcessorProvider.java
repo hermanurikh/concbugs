@@ -16,37 +16,43 @@ import java.util.Map;
 
 final class ProcessorProvider {
 
-    static {
-        registerStatement(BranchStatement.class).withProcessor(new BranchStatementProcessor());
-        registerStatement(CrossAssignmentStatement.class).withProcessor(new CrossAssignmentStatementProcessor());
-        registerStatement(DeclarationStatement.class).withProcessor(new DeclarationStatementProcessor());
-        registerStatement(InnerAssignmentStatement.class).withProcessor(new InnerAssignmentStatementProcessor());
-        registerStatement(MethodStatement.class).withProcessor(new MethodStatementProcessor());
-        registerStatement(SequentialStatement.class).withProcessor(new SequentialStatementProcessor());
-        registerStatement(SynchronizedStatement.class).withProcessor(new SynchronizedStatementProcessor());
-        registerStatement(WaitStatement.class).withProcessor(new WaitStatementProcessor());
+    public ProcessorProvider(BranchStatementProcessor branchStatementProcessor,
+                             CrossAssignmentStatementProcessor crossAssignmentStatementProcessor,
+                             DeclarationStatementProcessor declarationStatementProcessor,
+                             InnerAssignmentStatementProcessor innerAssignmentStatementProcessor,
+                             MethodStatementProcessor methodStatementProcessor,
+                             SequentialStatementProcessor sequentialStatementProcessor,
+                             SynchronizedStatementProcessor synchronizedStatementProcessor,
+                             WaitStatementProcessor waitStatementProcessor) {
+
+        registerStatement(BranchStatement.class).withProcessor(branchStatementProcessor);
+        registerStatement(CrossAssignmentStatement.class).withProcessor(crossAssignmentStatementProcessor);
+        registerStatement(DeclarationStatement.class).withProcessor(declarationStatementProcessor);
+        registerStatement(InnerAssignmentStatement.class).withProcessor(innerAssignmentStatementProcessor);
+        registerStatement(MethodStatement.class).withProcessor(methodStatementProcessor);
+        registerStatement(SequentialStatement.class).withProcessor(sequentialStatementProcessor);
+        registerStatement(SynchronizedStatement.class).withProcessor(synchronizedStatementProcessor);
+        registerStatement(WaitStatement.class).withProcessor(waitStatementProcessor);
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends Statement> AbstractStatementProcessor<T> get(T statement) {
-        return (AbstractStatementProcessor<T>) PROCESSORS.get(statement.getClass());
+    <T extends Statement> AbstractStatementProcessor<T> get(T statement) {
+        return (AbstractStatementProcessor<T>) processors.get(statement.getClass());
     }
 
-    private ProcessorProvider() { }
-
     @Data
-    private static class StatementProcessorMapBuilder<T extends Statement> {
+    private class StatementProcessorMapBuilder<T extends Statement> {
 
         private final Class<T> clazz;
         private void withProcessor(AbstractStatementProcessor<T> processor) {
-            PROCESSORS.put(clazz, processor);
+            processors.put(clazz, processor);
         }
     }
 
-    private static <T extends Statement> StatementProcessorMapBuilder<T> registerStatement(Class<T> clazz) {
+    private <T extends Statement> StatementProcessorMapBuilder<T> registerStatement(Class<T> clazz) {
         return new StatementProcessorMapBuilder<>(clazz);
     }
 
-    private static final Map<Class<? extends Statement>,
-            AbstractStatementProcessor<? extends Statement>> PROCESSORS = new HashMap<>();
+    private final Map<Class<? extends Statement>,
+            AbstractStatementProcessor<? extends Statement>> processors = new HashMap<>();
 }
