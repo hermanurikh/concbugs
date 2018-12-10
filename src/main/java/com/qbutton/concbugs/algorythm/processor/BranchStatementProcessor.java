@@ -14,6 +14,7 @@ final class BranchStatementProcessor extends AbstractStatementProcessor<BranchSt
 
     @Override
     State process(BranchStatement statement, State originalState) {
+        //todo use fork-join?
         State firstBranchState = visitorService.visitStatement(statement.getStmt1(), originalState);
         State secondBranchState = visitorService.visitStatement(statement.getStmt2(), originalState);
 
