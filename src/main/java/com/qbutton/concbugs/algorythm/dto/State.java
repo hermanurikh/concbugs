@@ -30,7 +30,7 @@ import java.util.Set;
  * synchronized statement in the current method.
  */
 @Data
-public final class State {
+public class State {
     private final Graph graph;
     private final Set<HeapObject> roots;
     private final List<HeapObject> locks;
