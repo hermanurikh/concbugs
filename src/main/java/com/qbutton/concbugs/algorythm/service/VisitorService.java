@@ -13,7 +13,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 
 @RequiredArgsConstructor
-public final class VisitorService {
+public class VisitorService {
 
     private final ProcessorFacade processorFacade;
 

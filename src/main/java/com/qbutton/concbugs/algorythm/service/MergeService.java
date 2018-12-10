@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class MergeService {
+public class MergeService {
 
     public Graph mergeGraphs(Graph g1, Graph g2) {
         Graph updatedGraph = g1.clone();
