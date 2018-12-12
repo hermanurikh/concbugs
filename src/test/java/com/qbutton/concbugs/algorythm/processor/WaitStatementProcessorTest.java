@@ -98,6 +98,51 @@ class WaitStatementProcessorTest {
     }
 
     @Test
+    @DisplayName("processes correctly when original locks are not empty and last lock is different from wait object, but wait object is already in graph")
+    void process_success_locksAreNotEmptyAndTailDiffers_graphMerge() {
+        //given
+        WaitStatementProcessor processor = new WaitStatementProcessor();
+        String waitVarName = "campaignId";
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
+
+        WaitStatement waitStatement = new WaitStatement(35, waitVarName);
+        HeapObject heapObject2 = new HeapObject(new ProgramPoint("1", 1), Object.class);
+        HeapObject heapObject3 = new HeapObject(new ProgramPoint("3", 3), Object.class);
+        Graph originalGraph = new Graph(ImmutableMap.of(
+                heapObject, ImmutableSet.of(heapObject3),
+                waitHeapObject, ImmutableSet.of(heapObject2)));
+        Set<HeapObject> originalRoots = ImmutableSet.of(heapObject);
+        Set<HeapObject> originalWaits = ImmutableSet.of(heapObject);
+        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), String.class), heapObject);
+        State originalState = new State(
+                originalGraph,
+                originalRoots,
+                originalLocks,
+                originalEnv,
+                originalWaits);
+        //when
+        State newState = processor.process(waitStatement, originalState);
+
+        //then
+        Map<HeapObject, Set<HeapObject>> newGraph = newState.getGraph().getNeighbors();
+        assertThat(newGraph.size(), is(2));
+        assertTrue(newGraph.containsKey(waitHeapObject));
+        assertTrue(newGraph.containsKey(heapObject));
+        assertThat(newGraph.get(heapObject).size(), is(2));
+        assertTrue(newGraph.get(heapObject).contains(waitHeapObject));
+        assertTrue(newGraph.get(heapObject).contains(heapObject3));
+        assertThat(newGraph.get(waitHeapObject).size(), is(1));
+        assertTrue(newGraph.get(waitHeapObject).contains(heapObject2));
+
+        assertThat(newState.getRoots(), is(originalRoots));
+        assertThat(newState.getLocks(), is(originalLocks));
+        assertThat(newState.getEnvironment(), is(originalEnv));
+        assertThat(newState.getWaits(), is(originalWaits));
+    }
+
+    @Test
     @DisplayName("processes correctly when original locks are not empty and last lock is same as wait object")
     void process_success_locksAreNotEmptyAndTailIsSame() {
         //given

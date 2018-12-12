@@ -9,6 +9,9 @@ import java.util.List;
 public class MethodDeclaration {
     private final Class<?> returnType;
     private final String methodName;
+    /**
+     * v1 in list of variables is 'this' if it is an instance method.
+     */
     private final List<Variable> variables;
     private final Statement methodBody;
 

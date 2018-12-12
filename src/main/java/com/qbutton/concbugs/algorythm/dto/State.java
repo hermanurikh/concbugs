@@ -1,5 +1,8 @@
 package com.qbutton.concbugs.algorythm.dto;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Data;
 
 import java.util.List;
@@ -30,10 +33,26 @@ import java.util.Set;
  * synchronized statement in the current method.
  */
 @Data
-public class State {
+public class State implements Cloneable {
     private final Graph graph;
     private final Set<HeapObject> roots;
     private final List<HeapObject> locks;
+    /**
+     * Environment should have 'this' if it is instance method put at the beginning of the method, or 'Class.class' if it is
+     * static method.
+     */
     private final List<EnvEntry> environment;
     private final Set<HeapObject> waits;
+
+    @SuppressFBWarnings("CN_IDIOM_NO_SUPER_CALL")
+    @Override
+    public State clone() {
+        return new State(
+                graph.clone(),
+                ImmutableSet.copyOf(roots),
+                ImmutableList.copyOf(locks),
+                ImmutableList.copyOf(environment),
+                ImmutableSet.copyOf(waits)
+        );
+    }
 }

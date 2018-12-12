@@ -9,11 +9,8 @@ import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatement> {
@@ -28,7 +25,9 @@ final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatem
                 .orElseThrow(() -> new AlgorithmValidationException("no envEntry found for varName " + statement.getVarName()));
 
         Set<HeapObject> newWaits = new HashSet<>(originalState.getWaits());
-        Map<HeapObject, Set<HeapObject>> newGraphMap = new HashMap<>(originalState.getGraph().getNeighbors());
+
+        Graph originalGraph = originalState.getGraph();
+        Graph newGraph = originalGraph.clone();
 
         List<HeapObject> currentLocks = originalState.getLocks();
         if (currentLocks.isEmpty()) {
@@ -36,30 +35,20 @@ final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatem
         } else {
             HeapObject lastLock = currentLocks.get(currentLocks.size() - 1);
             if (!lastLock.equals(heapObject)) {
-                addObjectToGraph(heapObject, newGraphMap, lastLock);
+
+                if (!originalGraph.getNeighbors().containsKey(lastLock)) {
+                    throw new AlgorithmValidationException("GraphMap is expected to contain lock object, but it does not: " + originalGraph.getNeighbors());
+                }
+                newGraph = originalGraph.withEdge(lastLock, heapObject);
             }
         }
 
         return new State(
-                new Graph(newGraphMap),
+                newGraph,
                 ImmutableSet.copyOf(originalState.getRoots()),
                 ImmutableList.copyOf(originalState.getLocks()),
                 ImmutableList.copyOf(originalState.getEnvironment()),
                 newWaits
         );
-    }
-
-    private void addObjectToGraph(HeapObject heapObject, Map<HeapObject, Set<HeapObject>> newGraphMap, HeapObject lastLock) {
-        // wait releases then reacquires heapObject, new lock ordering
-
-        //add object itself
-        newGraphMap.put(heapObject, Collections.emptySet());
-        //draw edge to this object from latest lock
-        if (!newGraphMap.containsKey(lastLock)) {
-            throw new AlgorithmValidationException("GraphMap is expected to contain lock object, but it does not: " + newGraphMap);
-        }
-        Set<HeapObject> heapObjects = new HashSet<>(newGraphMap.get(lastLock));
-        heapObjects.add(heapObject);
-        newGraphMap.put(lastLock, heapObjects);
     }
 }
