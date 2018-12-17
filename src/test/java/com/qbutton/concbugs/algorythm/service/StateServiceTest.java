@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("stateService class")
 class StateServiceTest {
 
-    private final StateService stateService = new StateService(new GraphService());
+    private final StateService stateService = new StateService(new GraphService(new ReflectionService()));
 
     @Nested
     @DisplayName("merges graphs and roots when merging states")
