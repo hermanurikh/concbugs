@@ -6,11 +6,11 @@ import org.reflections.Reflections;
 
 import java.util.Set;
 
-public class ReflectionService {
+class ReflectionService {
 
     private static final Reflections REFLECTIONS = new Reflections();
 
-    public Set<Class<?>> getSubclassesOf(Class<?> superClass) {
+    Set<Class<?>> getSubclassesOf(Class<?> superClass) {
         return Sets.union(
                 REFLECTIONS.getSubTypesOf(superClass),
                 ImmutableSet.of(superClass));

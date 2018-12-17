@@ -55,7 +55,7 @@ public class MergeService {
      * @param lineNumber line number where merge happens
      * @return merged environment
      */
-    public List<EnvEntry> mergeEnvs(List<EnvEntry> env1,
+    List<EnvEntry> mergeEnvs(List<EnvEntry> env1,
                                            List<EnvEntry> env2,
                                            int lineNumber) {
         Set<String> env1Keys = getKeys(env1);
@@ -94,7 +94,7 @@ public class MergeService {
         return env.stream().map(EnvEntry::getVarName).collect(Collectors.toSet());
     }
 
-    public Class<?> findLowestSuperClass(Class<?> class1, Class<?> class2) {
+    Class<?> findLowestSuperClass(Class<?> class1, Class<?> class2) {
         while (!class1.isAssignableFrom(class2))
             class1 = class1.getSuperclass();
         return class1;

@@ -23,14 +23,14 @@ public class GraphService {
 
     private final ReflectionService reflectionService;
 
-    public Graph removeObject(Graph graph, HeapObject heapObject) {
+    Graph removeObject(Graph graph, HeapObject heapObject) {
 
         ReplaceNodeResult replaceNodeResult = replaceNode(graph, Collections.emptySet(), heapObject, null);
 
         return replaceNodeResult.graph;
     }
 
-    public ReplaceNodeResult replaceNode(Graph graph,
+    ReplaceNodeResult replaceNode(Graph graph,
                                          Set<HeapObject> roots,
                                          HeapObject oldHO,
                                          HeapObject newHo) {
@@ -84,7 +84,7 @@ public class GraphService {
      * @param oldHO node to splice out
      * @return result of splicing out
      */
-    public ReplaceNodeResult spliceOutNode(Graph graph,
+    ReplaceNodeResult spliceOutNode(Graph graph,
                                            Set<HeapObject> roots,
                                            HeapObject oldHO) {
         Map<HeapObject, Set<HeapObject>> neighbors = new HashMap<>(graph.getNeighbors().size());
