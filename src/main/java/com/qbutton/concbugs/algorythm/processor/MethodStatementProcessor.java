@@ -29,6 +29,20 @@ final class MethodStatementProcessor extends AbstractStatementProcessor<MethodSt
 
     @Override
     State process(MethodStatement statement, State originalState) {
+        List<EnvEntry> newEnv = registerMethodResultInEnv(statement, originalState);
+
+        State currentState = new State(
+                originalState.getGraph(), originalState.getRoots(), originalState.getLocks(), newEnv, originalState.getWaits()
+        );
+
+        for (MethodDeclaration method : statement.getMethodDeclarations()) {
+            currentState = mergeMethod(originalState, newEnv, currentState, method);
+        }
+
+        return currentState;
+    }
+
+    private List<EnvEntry> registerMethodResultInEnv(MethodStatement statement, State originalState) {
         ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getLineNumber());
         HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
         EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
@@ -45,40 +59,42 @@ final class MethodStatementProcessor extends AbstractStatementProcessor<MethodSt
             newEnv.add(newEnvEntry);
         }
 
-        State currentState = new State(
-                originalState.getGraph(), originalState.getRoots(), originalState.getLocks(), newEnv, originalState.getWaits()
-        );
+        return newEnv;
+    }
 
-        for (MethodDeclaration method : statement.getMethodDeclarations()) {
-            State returnedMethodState = visitorService.visitMethod(method);
-            State renamedState = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
-            Graph newGraph = mergeService.mergeGraphs(currentState.getGraph(), renamedState.getGraph());
+    private State mergeMethod(State originalState, List<EnvEntry> newEnv, State currentState, MethodDeclaration method) {
+        State returnedMethodState = visitorService.visitMethod(method);
+        State renamedState = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+        Graph newGraph = mergeService.mergeGraphs(currentState.getGraph(), renamedState.getGraph());
 
-            Set<HeapObject> newRoots = currentState.getRoots();
-            Set<HeapObject> newWaits = currentState.getWaits();
+        Set<HeapObject> newRoots = currentState.getRoots();
+        Set<HeapObject> newWaits = currentState.getWaits();
 
-            if (originalState.getLocks().isEmpty()) {
-                //connect current lock to roots of returnedMethodState
-                newRoots = Sets.union(newRoots, renamedState.getRoots());
-                newWaits = Sets.union(newWaits, renamedState.getWaits());
-            } else {
-                HeapObject lastLock = originalState.getLocks().get(originalState.getLocks().size() - 1);
-                if (!newGraph.getNeighbors().containsKey(lastLock)) {
-                    throw new AlgorithmValidationException("Graph does not contain lock " + lastLock);
-                }
-                for (HeapObject root : renamedState.getRoots()) {
-                    newGraph = newGraph.withEdge(lastLock, root);
-                }
-                for (HeapObject wait : renamedState.getWaits()) {
-                    if (lastLock != wait) {
-                        newGraph = newGraph.withEdge(lastLock, wait);
-                    }
+        if (originalState.getLocks().isEmpty()) {
+            //connect current lock to roots of returnedMethodState
+            newRoots = Sets.union(newRoots, renamedState.getRoots());
+            newWaits = Sets.union(newWaits, renamedState.getWaits());
+        } else {
+            HeapObject lastLock = originalState.getLocks().get(originalState.getLocks().size() - 1);
+
+            checkGraphContainsLock(newGraph, lastLock);
+
+            for (HeapObject root : renamedState.getRoots()) {
+                newGraph = newGraph.withEdge(lastLock, root);
+            }
+            for (HeapObject wait : renamedState.getWaits()) {
+                if (lastLock != wait) {
+                    newGraph = newGraph.withEdge(lastLock, wait);
                 }
             }
-
-            currentState = new State(newGraph, newRoots, originalState.getLocks(), newEnv, newWaits);
         }
 
-        return currentState;
+        return new State(newGraph, newRoots, originalState.getLocks(), newEnv, newWaits);
+    }
+
+    private void checkGraphContainsLock(Graph newGraph, HeapObject lastLock) {
+        if (!newGraph.getNeighbors().containsKey(lastLock)) {
+            throw new AlgorithmValidationException("Graph does not contain lock " + lastLock);
+        }
     }
 }
