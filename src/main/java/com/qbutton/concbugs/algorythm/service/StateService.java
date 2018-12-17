@@ -16,7 +16,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
-public final class StateService {
+public class StateService {
 
     private final GraphService graphService;
 

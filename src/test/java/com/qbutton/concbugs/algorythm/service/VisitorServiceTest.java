@@ -73,7 +73,6 @@ class VisitorServiceTest {
         State state3 = Mockito.mock(State.class);
         State state4 = Mockito.mock(State.class);
         MethodDeclaration methodDeclaration = new MethodDeclaration(
-                Void.class,
                 "foo",
                 ImmutableList.of(
                         new MethodDeclaration.Variable("a", Integer.class),

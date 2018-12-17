@@ -13,9 +13,11 @@ import java.util.List;
 public final class MethodStatement extends Statement {
     //todo where searching of all method declarations will be implemented?
     private final List<MethodDeclaration> methodDeclarations;
+    private final Class<?> returnType;
 
-    public MethodStatement(int lineNumber, String varName, List<MethodDeclaration> methodDeclarations) {
+    public MethodStatement(int lineNumber, String varName, List<MethodDeclaration> methodDeclarations, Class<?> returnType) {
         super(lineNumber, varName);
         this.methodDeclarations = methodDeclarations;
+        this.returnType = returnType;
     }
 }
