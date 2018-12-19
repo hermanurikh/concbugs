@@ -55,7 +55,7 @@ public class StatementParser {
             statements.add(statement);
         } else if (expression.getLastChild() instanceof PsiNewExpression) {
             DeclarationStatement statement = new DeclarationStatement(
-                    left.getTextOffset(), left.getText(), getVarClass(left));
+                    left.getTextOffset(), left.getText(), getVarClass((PsiNewExpression) expression.getLastChild()));
             statements.add(statement);
         } else if (expression.getLastChild() instanceof PsiReferenceExpression) {
             PsiReferenceExpression right = (PsiReferenceExpression) expression.getLastChild();
@@ -181,10 +181,12 @@ public class StatementParser {
 
         if (!bodies.isEmpty()) {
             ifStatement = bodies.get(0);
-            if (bodies.size() == 2) {
-                elseStatement = bodies.get(1);
-            } else {
-                throw new RuntimeException("if statement contains more than 2 bodies - " + bodies);
+            if (bodies.size() > 1) {
+                if (bodies.size() == 2) {
+                    elseStatement = bodies.get(1);
+                } else {
+                    throw new RuntimeException("if statement contains more than 2 bodies - " + bodies);
+                }
             }
         }
 
@@ -210,6 +212,14 @@ public class StatementParser {
     }
 
     private String getVarClass(PsiReferenceExpression expression) {
+        return doGetVarClass(expression);
+    }
+
+    private String getVarClass(PsiNewExpression expression) {
+        return doGetVarClass(expression);
+    }
+
+    private String doGetVarClass(PsiExpression expression) {
         return expression.getType().getCanonicalText();
     }
 

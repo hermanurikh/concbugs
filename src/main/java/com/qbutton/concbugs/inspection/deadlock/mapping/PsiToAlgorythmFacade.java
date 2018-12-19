@@ -40,7 +40,7 @@ public class PsiToAlgorythmFacade {
 
     private Statement shrinkStatements(List<Statement> statements) {
         //todo
-        return null;
+        return statements.get(0);
     }
 
 }
