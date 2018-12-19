@@ -5,10 +5,10 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.testFramework.ResolveTestCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
+import com.intellij.testFramework.fixtures.JavaTestFixtureFactory;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TestFixtureBuilder;
 import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl;
@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.fest.assertions.Assertions.assertThat;
 
 @DisplayName("PsiToAlgorythmFacade")
-class PsiToAlgorythmFacadeTest extends ResolveTestCase {
+class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
     private PsiToAlgorythmFacade psiToAlgorythmFacade;
 
@@ -38,7 +38,7 @@ class PsiToAlgorythmFacadeTest extends ResolveTestCase {
 
 
     @BeforeEach
-    void init() throws Exception {
+    public void setUp() throws Exception {
         StatementParser statementParser = new StatementParser();
         StatementMapper statementMapper = new StatementMapper(statementParser);
         psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementMapper);
@@ -47,10 +47,10 @@ class PsiToAlgorythmFacadeTest extends ResolveTestCase {
 
         IdeaTestFixtureFactory factory = IdeaTestFixtureFactory.getFixtureFactory();
         TestFixtureBuilder<IdeaProjectTestFixture> fixtureBuilder =
-                factory.createLightFixtureBuilder(LightCodeInsightFixtureTestCase.JAVA_8);
+                factory.createLightFixtureBuilder(JAVA_8);
+
         final IdeaProjectTestFixture fixture = fixtureBuilder.getFixture();
-        testFixture = factory.createCodeInsightFixture(fixture, new LightTempDirTestFixtureImpl(true));
-        //testFixture = factory.createCodeInsightFixture(fixture, new HeavyTest(true));
+        testFixture = JavaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, new LightTempDirTestFixtureImpl(true));
         testFixture.setTestDataPath("src/test/resources/mapping/");
         testFixture.setUp();
     }
@@ -59,8 +59,6 @@ class PsiToAlgorythmFacadeTest extends ResolveTestCase {
     protected String getTestDataPath() {
         return "src/test/resources/mapping/";
     }
-
-
 
     @AfterEach
     public void tearDown() throws Exception {
@@ -216,11 +214,15 @@ class PsiToAlgorythmFacadeTest extends ResolveTestCase {
 
     }
 
-   /* @Override
+    /*@Override
     protected Sdk getTestProjectJdk() {
-        //return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
         return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
     }*/
 
 
+
+    /*@Override
+    protected Sdk getSdk() {
+        return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
+    }*/
 }
