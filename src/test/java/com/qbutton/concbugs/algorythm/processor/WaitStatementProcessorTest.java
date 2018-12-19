@@ -33,8 +33,8 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
@@ -65,15 +65,15 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
         Graph originalGraph = new Graph(ImmutableMap.of(heapObject, Collections.emptySet()));
         Set<HeapObject> originalRoots = ImmutableSet.of(heapObject);
         Set<HeapObject> originalWaits = ImmutableSet.of(heapObject);
-        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), String.class), heapObject);
+        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), "java.lang.String"), heapObject);
         State originalState = new State(
                 originalGraph,
                 originalRoots,
@@ -103,19 +103,19 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
-        HeapObject heapObject2 = new HeapObject(new ProgramPoint("1", 1), Object.class);
-        HeapObject heapObject3 = new HeapObject(new ProgramPoint("3", 3), Object.class);
+        HeapObject heapObject2 = new HeapObject(new ProgramPoint("1", 1), "java.lang.Object");
+        HeapObject heapObject3 = new HeapObject(new ProgramPoint("3", 3), "java.lang.Object");
         Graph originalGraph = new Graph(ImmutableMap.of(
                 heapObject, ImmutableSet.of(heapObject3),
                 waitHeapObject, ImmutableSet.of(heapObject2)));
         Set<HeapObject> originalRoots = ImmutableSet.of(heapObject);
         Set<HeapObject> originalWaits = ImmutableSet.of(heapObject);
-        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), String.class), heapObject);
+        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), "java.lang.String"), heapObject);
         State originalState = new State(
                 originalGraph,
                 originalRoots,
@@ -148,15 +148,15 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
         Graph originalGraph = new Graph(ImmutableMap.of(heapObject, Collections.emptySet()));
         Set<HeapObject> originalRoots = ImmutableSet.of(heapObject);
         Set<HeapObject> originalWaits = ImmutableSet.of(heapObject);
-        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), String.class), waitHeapObject);
+        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), "java.lang.String"), waitHeapObject);
         State originalState = new State(
                 originalGraph,
                 originalRoots,
@@ -180,8 +180,8 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry("otherVarName", waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
@@ -206,15 +206,15 @@ class WaitStatementProcessorTest {
         //given
         WaitStatementProcessor processor = new WaitStatementProcessor();
         String waitVarName = "campaignId";
-        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), Long.class);
-        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), Integer.class);
+        HeapObject waitHeapObject = new HeapObject(new ProgramPoint(waitVarName, 23), "java.lang.Long");
+        HeapObject heapObject = new HeapObject(new ProgramPoint("clientId", 25), "int");
         List<EnvEntry> originalEnv = ImmutableList.of(new EnvEntry(waitVarName, waitHeapObject));
 
         WaitStatement waitStatement = new WaitStatement(35, waitVarName);
         Graph originalGraph = new Graph(ImmutableMap.of(waitHeapObject, Collections.emptySet()));
         Set<HeapObject> originalRoots = ImmutableSet.of(heapObject);
         Set<HeapObject> originalWaits = ImmutableSet.of(heapObject);
-        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), String.class), heapObject);
+        List<HeapObject> originalLocks = ImmutableList.of(new HeapObject(new ProgramPoint("some name", 33), "java.lang.String"), heapObject);
         State originalState = new State(
                 originalGraph,
                 originalRoots,

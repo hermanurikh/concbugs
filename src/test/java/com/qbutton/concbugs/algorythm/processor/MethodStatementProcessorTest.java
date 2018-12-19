@@ -58,15 +58,15 @@ class MethodStatementProcessorTest {
         State originalState = Mockito.mock(State.class);
         String varName = "myVar";
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, Collections.emptyList(), Integer.class);
+                = new MethodStatement(32, varName, Collections.emptyList(), "int");
         when(originalState.getEnvironment()).thenReturn(ImmutableList.of(
-                new EnvEntry(varName, new HeapObject(ProgramPoint.UNKNOWN, Object.class))));
+                new EnvEntry(varName, new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object"))));
 
         //when
         State resultState = methodStatementProcessor.process(methodStatement, originalState);
 
         //then
-        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class));
+        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
         assertThat(resultState.getEnvironment().size(), is(1));
         assertThat(resultState.getEnvironment().get(0), is(expectedEntry));
     }
@@ -78,15 +78,15 @@ class MethodStatementProcessorTest {
         State originalState = Mockito.mock(State.class);
         String varName = "myVar";
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, Collections.emptyList(), Integer.class);
-        EnvEntry originalEnvEntry = new EnvEntry("someVar", new HeapObject(ProgramPoint.UNKNOWN, Object.class));
+                = new MethodStatement(32, varName, Collections.emptyList(), "int");
+        EnvEntry originalEnvEntry = new EnvEntry("someVar", new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object"));
         when(originalState.getEnvironment()).thenReturn(ImmutableList.of(originalEnvEntry));
 
         //when
         State resultState = methodStatementProcessor.process(methodStatement, originalState);
 
         //then
-        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class));
+        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
         assertThat(resultState.getEnvironment().size(), is(2));
         assertThat(resultState.getEnvironment().get(0), is(originalEnvEntry));
         assertThat(resultState.getEnvironment().get(1), is(expectedEntry));
@@ -102,13 +102,13 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), Integer.class);
-        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class));
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
-        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, String.class);
-        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
-        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, Object.class);
-        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, Number.class);
+        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
+        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, "int");
+        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object");
+        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Number");
 
         Graph originalGraph = new Graph(ImmutableMap.of(ho1, emptySet(),
                 ho2, ImmutableSet.of(ho1)));
@@ -173,14 +173,14 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), Integer.class);
-        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class));
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
-        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, String.class);
-        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
-        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, Object.class);
-        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, Number.class);
-        HeapObject ho5 = new HeapObject(ProgramPoint.UNKNOWN, List.class);
+        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
+        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, "int");
+        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object");
+        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Number");
+        HeapObject ho5 = new HeapObject(ProgramPoint.UNKNOWN, "java.util.List");
 
         Graph originalGraph = new Graph(ImmutableMap.of(ho1, emptySet(),
                 ho2, ImmutableSet.of(ho1)));
@@ -258,13 +258,13 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), Integer.class);
-        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class));
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+        EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
-        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, String.class);
-        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
-        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, Object.class);
-        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, Number.class);
+        HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
+        HeapObject ho2 = new HeapObject(ProgramPoint.UNKNOWN, "int");
+        HeapObject ho3 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object");
+        HeapObject ho4 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Number");
 
         Graph originalGraph = new Graph(ImmutableMap.of(ho1, emptySet(),
                 ho2, ImmutableSet.of(ho1)));

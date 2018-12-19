@@ -17,6 +17,6 @@ public class MethodDeclaration {
     @Data
     public static class Variable {
         private final String variableName;
-        private final Class<?> variableClass;
+        private final String variableClass;
     }
 }

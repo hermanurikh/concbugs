@@ -1,7 +1,7 @@
 package com.qbutton.concbugs.notmine;
 
 import com.intellij.codeInsight.daemon.GroupNames;
-import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
+import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.InspectionsBundle;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  * @author max
  */
 @SuppressFBWarnings(justification = "this class is not used yet, saved for future reasons")
-public class ComparingReferencesInspection extends BaseJavaLocalInspectionTool {
+public class ComparingReferencesInspection extends AbstractBaseJavaLocalInspectionTool {
   private static final Logger LOG = Logger.getInstance("#com.intellij.codeInspection.ComparingReferencesInspection");
 
   private final LocalQuickFix myQuickFix = new MyQuickFix();
@@ -171,6 +171,6 @@ public class ComparingReferencesInspection extends BaseJavaLocalInspectionTool {
   }
 
   public boolean isEnabledByDefault() {
-    return true;
+    return false;
   }
 }

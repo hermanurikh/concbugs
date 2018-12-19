@@ -60,7 +60,7 @@ class VisitorServiceTest {
         //given
         int lineNumber = 34;
         String varName = "some var";
-        Statement methodBody = new DeclarationStatement(lineNumber, varName, Double.class);
+        Statement methodBody = new DeclarationStatement(lineNumber, varName, "java.lang.Double");
         State emptyState = new State(
                 new Graph(
                         emptyMap()
@@ -75,23 +75,23 @@ class VisitorServiceTest {
         MethodDeclaration methodDeclaration = new MethodDeclaration(
                 "foo",
                 ImmutableList.of(
-                        new MethodDeclaration.Variable("a", Integer.class),
-                        new MethodDeclaration.Variable("b", String.class)),
+                        new MethodDeclaration.Variable("a", "int"),
+                        new MethodDeclaration.Variable("b", "java.lang.String")),
                 methodBody);
         when(processorFacade.process(any(), any())).thenAnswer(invocationOnMock -> {
             DeclarationStatement statement = (DeclarationStatement) invocationOnMock.getArguments()[0];
             if (statement.getVarName().equals("a")
-                    && statement.getClazz() == Integer.class
+                    && statement.getClazz() == "int"
                     && invocationOnMock.getArguments()[1].equals(emptyState)) {
                 return state2;
             }
             if (statement.getVarName().equals("b")
-                    && statement.getClazz() == String.class
+                    && statement.getClazz() == "java.lang.String"
                     && invocationOnMock.getArguments()[1] == state2) {
                 return state3;
             }
             if (statement.getVarName().equals(varName)
-                    && statement.getClazz() == Double.class
+                    && statement.getClazz() == "java.lang.Double"
                     && invocationOnMock.getArguments()[1] == state3) {
                 return state4;
             }
@@ -103,8 +103,8 @@ class VisitorServiceTest {
 
         //then
         assertThat(newState, is(state4));
-        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "a", Integer.class)), eq(emptyState));
-        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "b", String.class)), eq(state2));
+        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "a", "int")), eq(emptyState));
+        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "b", "java.lang.String")), eq(state2));
         verify(processorFacade).process(eq(methodBody), eq(state3));
         verifyNoMoreInteractions(processorFacade);
     }

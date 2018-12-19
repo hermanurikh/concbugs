@@ -80,7 +80,7 @@ public class MergeService {
                     if (ho1.equals(ho2)) {
                         mergedEnv.add(env1Entry);
                     } else {
-                        Class<?> lowestSuperClass = findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
+                        String lowestSuperClass = findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
                         ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
                         mergedEnv.add(new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)));
                     }
@@ -98,5 +98,10 @@ public class MergeService {
         while (!class1.isAssignableFrom(class2))
             class1 = class1.getSuperclass();
         return class1;
+    }
+
+    String findLowestSuperClass(String class1, String class2) {
+        //TODO
+        return null;
     }
 }

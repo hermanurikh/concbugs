@@ -30,9 +30,9 @@ class InnerAssignmentStatementProcessorTest {
         //given
         InnerAssignmentStatementProcessor processor = new InnerAssignmentStatementProcessor();
         String varName = "v1";
-        InnerAssignmentStatement statement = new InnerAssignmentStatement(32, varName, Integer.class);
+        InnerAssignmentStatement statement = new InnerAssignmentStatement(32, varName, "int");
 
-        HeapObject ho1 = new HeapObject(new ProgramPoint("3", 2), String.class);
+        HeapObject ho1 = new HeapObject(new ProgramPoint("3", 2), "java.lang.String");
         Set<HeapObject> ho1Set = ImmutableSet.of(ho1);
         List<HeapObject> ho1List = ImmutableList.of(ho1);
         Graph ho1Graph = new Graph(of(ho1, emptySet()));
@@ -57,7 +57,7 @@ class InnerAssignmentStatementProcessorTest {
         assertThat(newEnv.size(), is(2));
         assertThat(newEnv.get(0), is(ho1EnvEntry));
         assertThat(newEnv.get(1),
-                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class))));
+                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"))));
     }
 
     @Test
@@ -66,7 +66,7 @@ class InnerAssignmentStatementProcessorTest {
         //given
         InnerAssignmentStatementProcessor processor = new InnerAssignmentStatementProcessor();
         String varName = "v1";
-        InnerAssignmentStatement statement = new InnerAssignmentStatement(32, varName, Integer.class);
+        InnerAssignmentStatement statement = new InnerAssignmentStatement(32, varName, "int");
 
 
         Graph graph = new Graph(Collections.emptyMap());
@@ -89,6 +89,6 @@ class InnerAssignmentStatementProcessorTest {
         List<EnvEntry> newEnv = newState.getEnvironment();
         assertThat(newEnv.size(), is(1));
         assertThat(newEnv.get(0),
-                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), Integer.class))));
+                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"))));
     }
 }

@@ -33,7 +33,7 @@ class CrossAssignmentStatementProcessorTest {
         String rightVarName = "v2";
         CrossAssignmentStatement statement = new CrossAssignmentStatement(32, varName, rightVarName);
 
-        HeapObject ho1 = new HeapObject(new ProgramPoint(rightVarName, 2), String.class);
+        HeapObject ho1 = new HeapObject(new ProgramPoint(rightVarName, 2), "java.lang.String");
         Set<HeapObject> ho1Set = ImmutableSet.of(ho1);
         List<HeapObject> ho1List = ImmutableList.of(ho1);
         Graph ho1Graph = new Graph(of(ho1, emptySet()));
@@ -69,7 +69,7 @@ class CrossAssignmentStatementProcessorTest {
         String rightVarName = "v2";
         CrossAssignmentStatement statement = new CrossAssignmentStatement(32, varName, rightVarName);
 
-        HeapObject ho1 = new HeapObject(new ProgramPoint(rightVarName, 2), String.class);
+        HeapObject ho1 = new HeapObject(new ProgramPoint(rightVarName, 2), "java.lang.String");
         Set<HeapObject> ho1Set = ImmutableSet.of(ho1);
         List<HeapObject> ho1List = ImmutableList.of(ho1);
         Graph ho1Graph = new Graph(of(ho1, emptySet()));

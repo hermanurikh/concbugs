@@ -1,12 +1,12 @@
-package com.qbutton.concbugs.notmine;
+package com.qbutton.concbugs.inspection.deadlock;
 
 import com.intellij.codeInspection.InspectionToolProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class ConcBugsProvider implements InspectionToolProvider {
+public class DeadlocksProvider implements InspectionToolProvider {
     @NotNull
     @Override
     public Class[] getInspectionClasses() {
-        return new Class[0];
+        return new Class[]{DeadlocksInspection.class};
     }
 }

@@ -38,7 +38,7 @@ class StateServiceTest {
         @DisplayName("correctly when graph has one object, parameter is formal and actual is among locks")
         void oneObject_formalAndActual_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
             Graph calleeGraph = new Graph(ImmutableMap.of(ho1, emptySet()));
             Set<HeapObject> calleeRoots = ImmutableSet.of(ho1);
             List<HeapObject> calleeLocks = emptyList();
@@ -47,7 +47,7 @@ class StateServiceTest {
 
             State returnedMethodState = new State(calleeGraph, calleeRoots, calleeLocks, calleeEnv, calleeWaits);
 
-            HeapObject ho2 = new HeapObject(new ProgramPoint("my initial var", 12), Integer.class);
+            HeapObject ho2 = new HeapObject(new ProgramPoint("my initial var", 12), "int");
             Graph callerGraph = new Graph(emptyMap());
             Set<HeapObject> callerRoots = emptySet();
             List<HeapObject> callerLocks = ImmutableList.of(ho2);
@@ -71,7 +71,7 @@ class StateServiceTest {
         @DisplayName("correctly when graph has one object, parameter is formal, but actual is not among locks")
         void oneObject_onlyFormal_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
             Graph calleeGraph = new Graph(ImmutableMap.of(ho1, emptySet()));
             Set<HeapObject> calleeRoots = ImmutableSet.of(ho1);
             List<HeapObject> calleeLocks = emptyList();
@@ -80,7 +80,7 @@ class StateServiceTest {
 
             State returnedMethodState = new State(calleeGraph, calleeRoots, calleeLocks, calleeEnv, calleeWaits);
 
-            HeapObject ho2 = new HeapObject(new ProgramPoint("my initial var", 12), Integer.class);
+            HeapObject ho2 = new HeapObject(new ProgramPoint("my initial var", 12), "int");
             Graph callerGraph = new Graph(emptyMap());
             Set<HeapObject> callerRoots = emptySet();
             List<HeapObject> callerLocks = ImmutableList.of();
@@ -106,7 +106,7 @@ class StateServiceTest {
         @DisplayName("correctly when graph has one object which is not among formal params")
         void oneObject_notFormal_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
             Graph calleeGraph = new Graph(ImmutableMap.of(ho1, emptySet()));
             Set<HeapObject> calleeRoots = ImmutableSet.of(ho1);
             List<HeapObject> calleeLocks = emptyList();
@@ -127,7 +127,7 @@ class StateServiceTest {
             State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
 
             //then
-            HeapObject expected = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
+            HeapObject expected = new HeapObject(ProgramPoint.UNKNOWN, "int");
             assertThat(state.getGraph().getNeighbors().size(), is(1));
             assertTrue(state.getGraph().getNeighbors().containsKey(expected));
             assertThat(state.getRoots().size(), is(1));
@@ -141,10 +141,10 @@ class StateServiceTest {
         @DisplayName("correctly when there are 4 method params, 3 of which in graph, each with different scenario")
         void fourObjects_differentScenarios_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
-            HeapObject ho2 = new HeapObject(new ProgramPoint("my var2", 25), String.class);
-            HeapObject ho3 = new HeapObject(new ProgramPoint("my var3", 26), Number.class);
-            HeapObject ho4 = new HeapObject(new ProgramPoint("my var4", 27), Map.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
+            HeapObject ho2 = new HeapObject(new ProgramPoint("my var2", 25), "java.lang.String");
+            HeapObject ho3 = new HeapObject(new ProgramPoint("my var3", 26), "java.lang.Number");
+            HeapObject ho4 = new HeapObject(new ProgramPoint("my var4", 27), "java.util.Map");
             Graph calleeGraph = new Graph(ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
                     ho2, ImmutableSet.of(ho3),
@@ -159,9 +159,9 @@ class StateServiceTest {
 
             State returnedMethodState = new State(calleeGraph, calleeRoots, calleeLocks, calleeEnv, calleeWaits);
 
-            HeapObject actualHo4 = new HeapObject(new ProgramPoint("my initial var4", 12), Map.class);
-            HeapObject actualHo1 = new HeapObject(new ProgramPoint("my initial var", 12), Integer.class);
-            HeapObject actualHo2 = new HeapObject(new ProgramPoint("my initial var2", 12), String.class);
+            HeapObject actualHo4 = new HeapObject(new ProgramPoint("my initial var4", 12), "java.util.Map");
+            HeapObject actualHo1 = new HeapObject(new ProgramPoint("my initial var", 12), "int");
+            HeapObject actualHo2 = new HeapObject(new ProgramPoint("my initial var2", 12), "java.lang.String");
             Graph callerGraph = new Graph(emptyMap());
             Set<HeapObject> callerRoots = emptySet();
             List<HeapObject> callerLocks = ImmutableList.of(actualHo1);
@@ -182,7 +182,7 @@ class StateServiceTest {
                 ho2 has been replaced by actualHo2
                 ho3 has been replaced by unknown heap object
              */
-            HeapObject expectedUnknownObject = new HeapObject(ProgramPoint.UNKNOWN, Number.class);
+            HeapObject expectedUnknownObject = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Number");
             Map<HeapObject, Set<HeapObject>> newGraph = state.getGraph().getNeighbors();
             assertThat(newGraph.size(), is(2));
             assertTrue(newGraph.containsKey(actualHo2));
@@ -208,7 +208,7 @@ class StateServiceTest {
         @DisplayName("correctly when there is one wait in formal parameters")
         void oneWait_formal_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
             Graph calleeGraph = new Graph(emptyMap());
             List<EnvEntry> calleeEnv = ImmutableList.of(new EnvEntry("my var", ho1));
             Set<HeapObject> calleeRoots = emptySet();
@@ -217,7 +217,7 @@ class StateServiceTest {
 
             State returnedMethodState = new State(calleeGraph, calleeRoots, calleeLocks, calleeEnv, calleeWaits);
 
-            HeapObject actualHo1 = new HeapObject(new ProgramPoint("my initial var", 12), Integer.class);
+            HeapObject actualHo1 = new HeapObject(new ProgramPoint("my initial var", 12), "int");
             Graph callerGraph = new Graph(emptyMap());
             Set<HeapObject> callerRoots = emptySet();
             List<HeapObject> callerLocks = emptyList();
@@ -238,7 +238,7 @@ class StateServiceTest {
         @DisplayName("correctly when there is one wait not in formal parameters")
         void oneWait_inFormal_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
             Graph calleeGraph = new Graph(emptyMap());
             List<EnvEntry> calleeEnv = emptyList();
             Set<HeapObject> calleeRoots = emptySet();
@@ -260,15 +260,15 @@ class StateServiceTest {
 
             //then
             assertThat(state.getWaits().size(), is(1));
-            assertTrue(state.getWaits().contains(new HeapObject(ProgramPoint.UNKNOWN, Integer.class)));
+            assertTrue(state.getWaits().contains(new HeapObject(ProgramPoint.UNKNOWN, "int")));
         }
 
         @Test
         @DisplayName("correctly when there are 2 waits with different scenarios")
         void twoWaits_differentScenarios_success() {
             //given
-            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), Integer.class);
-            HeapObject ho2 = new HeapObject(new ProgramPoint("my var2", 25), Number.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("my var", 24), "int");
+            HeapObject ho2 = new HeapObject(new ProgramPoint("my var2", 25), "java.lang.Number");
             Graph calleeGraph = new Graph(emptyMap());
             List<EnvEntry> calleeEnv = ImmutableList.of(new EnvEntry("my var2", ho2));
             Set<HeapObject> calleeRoots = emptySet();
@@ -277,7 +277,7 @@ class StateServiceTest {
 
             State returnedMethodState = new State(calleeGraph, calleeRoots, calleeLocks, calleeEnv, calleeWaits);
 
-            HeapObject actualHo2 = new HeapObject(new ProgramPoint("my initial var2", 12), Number.class);
+            HeapObject actualHo2 = new HeapObject(new ProgramPoint("my initial var2", 12), "java.lang.Number");
             Graph callerGraph = new Graph(emptyMap());
             Set<HeapObject> callerRoots = emptySet();
             List<HeapObject> callerLocks = emptyList();
@@ -292,7 +292,7 @@ class StateServiceTest {
             //then
             assertThat(state.getWaits().size(), is(2));
             assertTrue(state.getWaits().contains(actualHo2));
-            assertTrue(state.getWaits().contains(new HeapObject(ProgramPoint.UNKNOWN, Integer.class)));
+            assertTrue(state.getWaits().contains(new HeapObject(ProgramPoint.UNKNOWN, "int")));
         }
     }
 
@@ -301,7 +301,7 @@ class StateServiceTest {
     void renameFromCalleeToCallerContext_fail_parametersLenghDiffer() {
         //given
         List<EnvEntry> calleeEnv = ImmutableList.of(
-                new EnvEntry("my var2", new HeapObject(ProgramPoint.UNKNOWN, Integer.class)));
+                new EnvEntry("my var2", new HeapObject(ProgramPoint.UNKNOWN, "int")));
         State returnedMethodState = new State(
                 new Graph(emptyMap()), emptySet(), emptyList(), calleeEnv, emptySet());
 

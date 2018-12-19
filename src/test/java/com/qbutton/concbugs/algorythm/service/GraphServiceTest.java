@@ -7,15 +7,6 @@ import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
-import com.qbutton.concbugs.algorythm.dto.statement.BranchStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.SequentialStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.Statement;
-import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
-import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -69,13 +60,13 @@ class GraphServiceTest {
                 ho2 -> 0
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
@@ -114,7 +105,7 @@ class GraphServiceTest {
                     () -> graphService.removeObject(initialGraph,
                             new HeapObject(
                                     new ProgramPoint("any", 5),
-                                    Integer.class
+                                    "int"
                             )));
         }
     }
@@ -136,16 +127,16 @@ class GraphServiceTest {
                 ho2 -> 0
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             ProgramPoint point4 = new ProgramPoint("d", 4);
-            HeapObject ho4 = new HeapObject(point4, Object.class);
+            HeapObject ho4 = new HeapObject(point4, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
@@ -198,13 +189,13 @@ class GraphServiceTest {
                 ho3 -> ho1
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
@@ -245,13 +236,13 @@ class GraphServiceTest {
                 ho3 -> ho1
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2, ho3),
@@ -291,7 +282,7 @@ class GraphServiceTest {
                             emptySet(),
                             new HeapObject(
                                     new ProgramPoint("any", 5),
-                                    Integer.class
+                                    "int"
                             ),
                             null));
         }
@@ -313,16 +304,16 @@ class GraphServiceTest {
                 ho4 -> ho2
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             ProgramPoint point4 = new ProgramPoint("d", 4);
-            HeapObject ho4 = new HeapObject(point4, Object.class);
+            HeapObject ho4 = new HeapObject(point4, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2),
@@ -374,13 +365,13 @@ class GraphServiceTest {
                 ho2 -> ho1
             */
             ProgramPoint point1 = new ProgramPoint("a", 1);
-            HeapObject ho1 = new HeapObject(point1, Integer.class);
+            HeapObject ho1 = new HeapObject(point1, "int");
 
             ProgramPoint point2 = new ProgramPoint("b", 2);
-            HeapObject ho2 = new HeapObject(point2, String.class);
+            HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
             ProgramPoint point3 = new ProgramPoint("c", 3);
-            HeapObject ho3 = new HeapObject(point3, Object.class);
+            HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
             Map<HeapObject, Set<HeapObject>> graphMap = ImmutableMap.of(
                     ho1, ImmutableSet.of(ho2),
@@ -419,7 +410,7 @@ class GraphServiceTest {
                             graph,
                             Collections.emptySet(),
                             new HeapObject(
-                                    new ProgramPoint("1", 1), Integer.class
+                                    new ProgramPoint("1", 1), "int"
                             )));
         }
     }
@@ -433,44 +424,44 @@ class GraphServiceTest {
         void postProcess() {
             //given
 
-            HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 32), Statement.class);
-            HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 33), String.class);
-            HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 34), Integer.class);
-            HeapObject ho4 = new HeapObject(new ProgramPoint("v4", 35), Statement.class);
-            HeapObject ho5 = new HeapObject(new ProgramPoint("v5", 36), Double.class);
-            HeapObject ho6 = new HeapObject(new ProgramPoint("v6", 37), Long.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 32), "com.qbutton.concbugs.algorythm.dto.statement.Statement");
+            HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 33), "java.lang.String");
+            HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 34), "int");
+            HeapObject ho4 = new HeapObject(new ProgramPoint("v4", 35), "com.qbutton.concbugs.algorythm.dto.statement.Statement");
+            HeapObject ho5 = new HeapObject(new ProgramPoint("v5", 36), "java.lang.Double");
+            HeapObject ho6 = new HeapObject(new ProgramPoint("v6", 37), "java.lang.Long");
 
             when(reflectionService.getSubclassesOf(any())).thenAnswer(invocation -> {
-                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
+                String clazz = (String) invocation.getArguments()[0];
 
-                if (clazz.equals(Statement.class)) {
+                if (clazz.equals("com.qbutton.concbugs.algorythm.dto.statement.Statement")) {
                     return ImmutableSet.of(
-                            Statement.class,
-                            BranchStatement.class,
-                            CrossAssignmentStatement.class,
-                            DeclarationStatement.class,
-                            InnerAssignmentStatement.class,
-                            MethodStatement.class,
-                            SequentialStatement.class,
-                            SynchronizedStatement.class,
-                            WaitStatement.class
+                            "com.qbutton.concbugs.algorythm.dto.statement.Statement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.BranchStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.MethodStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.SequentialStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement",
+                            "com.qbutton.concbugs.algorythm.dto.statement.WaitStatement"
                     );
                 }
 
-                if (clazz.equals(String.class)) {
-                    return ImmutableSet.of(String.class);
+                if (clazz.equals("java.lang.String")) {
+                    return ImmutableSet.of("java.lang.String");
                 }
 
-                if (clazz.equals(Integer.class)) {
-                    return ImmutableSet.of(Integer.class);
+                if (clazz.equals("int")) {
+                    return ImmutableSet.of("int");
                 }
 
-                if (clazz.equals(Double.class)) {
-                    return ImmutableSet.of(Double.class);
+                if (clazz.equals("java.lang.Double")) {
+                    return ImmutableSet.of("java.lang.Double");
                 }
 
-                if (clazz.equals(Long.class)) {
-                    return ImmutableSet.of(Long.class);
+                if (clazz.equals("java.lang.Long")) {
+                    return ImmutableSet.of("java.lang.Long");
                 }
 
                 return null;
@@ -526,19 +517,19 @@ class GraphServiceTest {
                 - a link from ho5 to each of 9 subclasses
              */
 
-            HeapObject expectedStatementHo1 = new HeapObject(ProgramPoint.UNKNOWN, Statement.class);
-            HeapObject expectedStatementHo2 = new HeapObject(ProgramPoint.UNKNOWN, BranchStatement.class);
-            HeapObject expectedStatementHo3 = new HeapObject(ProgramPoint.UNKNOWN, CrossAssignmentStatement.class);
-            HeapObject expectedStatementHo4 = new HeapObject(ProgramPoint.UNKNOWN, DeclarationStatement.class);
-            HeapObject expectedStatementHo5 = new HeapObject(ProgramPoint.UNKNOWN, InnerAssignmentStatement.class);
-            HeapObject expectedStatementHo6 = new HeapObject(ProgramPoint.UNKNOWN, MethodStatement.class);
-            HeapObject expectedStatementHo7 = new HeapObject(ProgramPoint.UNKNOWN, SequentialStatement.class);
-            HeapObject expectedStatementHo8 = new HeapObject(ProgramPoint.UNKNOWN, SynchronizedStatement.class);
-            HeapObject expectedStatementHo9 = new HeapObject(ProgramPoint.UNKNOWN, WaitStatement.class);
-            HeapObject expectedHo2 = new HeapObject(ProgramPoint.UNKNOWN, String.class);
-            HeapObject expectedHo3 = new HeapObject(ProgramPoint.UNKNOWN, Integer.class);
-            HeapObject expectedHo5 = new HeapObject(ProgramPoint.UNKNOWN, Double.class);
-            HeapObject expectedHo6 = new HeapObject(ProgramPoint.UNKNOWN, Long.class);
+            HeapObject expectedStatementHo1 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.Statement");
+            HeapObject expectedStatementHo2 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.BranchStatement");
+            HeapObject expectedStatementHo3 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement");
+            HeapObject expectedStatementHo4 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement");
+            HeapObject expectedStatementHo5 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement");
+            HeapObject expectedStatementHo6 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.MethodStatement");
+            HeapObject expectedStatementHo7 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.SequentialStatement");
+            HeapObject expectedStatementHo8 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement");
+            HeapObject expectedStatementHo9 = new HeapObject(ProgramPoint.UNKNOWN, "com.qbutton.concbugs.algorythm.dto.statement.WaitStatement");
+            HeapObject expectedHo2 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
+            HeapObject expectedHo3 = new HeapObject(ProgramPoint.UNKNOWN, "int");
+            HeapObject expectedHo5 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Double");
+            HeapObject expectedHo6 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Long");
             ImmutableSet<HeapObject> statementEdges = ImmutableSet.of(expectedHo2, expectedHo3, expectedHo5, expectedHo6);
 
             Map<HeapObject, Set<HeapObject>> graphMap = resultGraph.getNeighbors();

@@ -8,9 +8,9 @@ import lombok.Getter;
  */
 @Getter
 public final class InnerAssignmentStatement extends Statement {
-    private final Class<?> clazz;
+    private final String clazz;
 
-    public InnerAssignmentStatement(int lineNumber, String varName, Class<?> clazz) {
+    public InnerAssignmentStatement(int lineNumber, String varName, String clazz) {
         super(lineNumber, varName);
         this.clazz = clazz;
     }

@@ -43,8 +43,8 @@ class AlgorythmFacadeTest {
     @Test
     void visitLibrary() {
         //given
-        MethodStatement method1 = new MethodStatement(0, "0", Collections.emptyList(), Integer.class);
-        MethodStatement method2 = new MethodStatement(1, "1", Collections.emptyList(), String.class);
+        MethodStatement method1 = new MethodStatement(0, "0", Collections.emptyList(), "int");
+        MethodStatement method2 = new MethodStatement(1, "1", Collections.emptyList(), "java.lang.String");
 
         State methodProcessResult1 = Mockito.mock(State.class);
         State methodProcessResult2 = Mockito.mock(State.class);

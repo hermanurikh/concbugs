@@ -129,14 +129,14 @@ public class GraphService {
             for (Map.Entry<HeapObject, Set<HeapObject>> entry : fixedMethodState.getGraph().getNeighbors().entrySet()) {
                 HeapObject from = entry.getKey();
                 Set<HeapObject> edges = entry.getValue();
-                Set<Class<?>> subclassesOfFrom = reflectionService.getSubclassesOf(from.getClazz());
-                Set<Class<?>> subclassesOfTo = new HashSet<>();
+                Set<String> subclassesOfFrom = reflectionService.getSubclassesOf(from.getClazz());
+                Set<String> subclassesOfTo = new HashSet<>();
                 for (HeapObject to : edges) {
                     subclassesOfTo.addAll(reflectionService.getSubclassesOf(to.getClazz()));
                 }
 
-                for (Class<?> subclassOfFrom : subclassesOfFrom) {
-                    for (Class<?> subclassOfTo : subclassesOfTo) {
+                for (String subclassOfFrom : subclassesOfFrom) {
+                    for (String subclassOfTo : subclassesOfTo) {
                         HeapObject unknownHoFrom = new HeapObject(ProgramPoint.UNKNOWN, subclassOfFrom);
                         HeapObject unknownHoTo = new HeapObject(ProgramPoint.UNKNOWN, subclassOfTo);
 

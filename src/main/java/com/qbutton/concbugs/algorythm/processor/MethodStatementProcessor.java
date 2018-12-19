@@ -43,23 +43,27 @@ final class MethodStatementProcessor extends AbstractStatementProcessor<MethodSt
     }
 
     private List<EnvEntry> registerMethodResultInEnv(MethodStatement statement, State originalState) {
-        ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getLineNumber());
-        HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
-        EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
+        if (statement.getVarName() != null) {
+            ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getLineNumber());
+            HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
+            EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
 
-        List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
+            List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
 
-        OptionalInt varExists = IntStream.range(0, newEnv.size())
-                .filter(i -> newEnv.get(i).getVarName().equals(newProgramPoint.getVariableName()))
-                .findAny();
+            OptionalInt varExists = IntStream.range(0, newEnv.size())
+                    .filter(i -> newEnv.get(i).getVarName().equals(newProgramPoint.getVariableName()))
+                    .findAny();
 
-        if (varExists.isPresent()) {
-            newEnv.set(varExists.getAsInt(), newEnvEntry);
-        } else {
-            newEnv.add(newEnvEntry);
+            if (varExists.isPresent()) {
+                newEnv.set(varExists.getAsInt(), newEnvEntry);
+            } else {
+                newEnv.add(newEnvEntry);
+            }
+
+            return newEnv;
         }
 
-        return newEnv;
+        return originalState.getEnvironment();
     }
 
     private State mergeMethod(State originalState, List<EnvEntry> newEnv, State currentState, MethodDeclaration method) {

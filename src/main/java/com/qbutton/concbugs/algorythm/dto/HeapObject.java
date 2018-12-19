@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public final class HeapObject implements Cloneable {
     private final ProgramPoint programPoint;
-    private final Class<?> clazz;
+    private final String clazz;
 
     @SuppressFBWarnings("CN_IDIOM_NO_SUPER_CALL")
     @Override

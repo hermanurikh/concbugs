@@ -40,13 +40,13 @@ class MergeServiceTest {
             ho2 -> 0
         */
         ProgramPoint point1 = new ProgramPoint("a", 1);
-        HeapObject ho1 = new HeapObject(point1, Integer.class);
+        HeapObject ho1 = new HeapObject(point1, "int");
 
         ProgramPoint point2 = new ProgramPoint("b", 2);
-        HeapObject ho2 = new HeapObject(point2, String.class);
+        HeapObject ho2 = new HeapObject(point2, "java.lang.String");
 
         ProgramPoint point3 = new ProgramPoint("c", 3);
-        HeapObject ho3 = new HeapObject(point3, Object.class);
+        HeapObject ho3 = new HeapObject(point3, "java.lang.Object");
 
         Graph g1 = new Graph(ImmutableMap.of(
                 ho1, ImmutableSet.of(ho2, ho3),
@@ -60,7 +60,7 @@ class MergeServiceTest {
             ho2 -> ho4
         */
         ProgramPoint point4 = new ProgramPoint("d", 4);
-        HeapObject ho4 = new HeapObject(point4, Map.class);
+        HeapObject ho4 = new HeapObject(point4, "java.util.Map");
 
         Graph g2 = new Graph(ImmutableMap.of(
                 ho4, ImmutableSet.of(ho2),
@@ -108,10 +108,10 @@ class MergeServiceTest {
         void mergeEnvs() {
             //given
             String varName1 = "v1";
-            HeapObject ho1 = new HeapObject(new ProgramPoint(varName1, 10), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint(varName1, 10), "int");
             String varName2 = "v2";
-            HeapObject ho2 = new HeapObject(new ProgramPoint(varName2, 11), String.class);
-            HeapObject ho3 = new HeapObject(new ProgramPoint(varName1, 12), Number.class);
+            HeapObject ho2 = new HeapObject(new ProgramPoint(varName2, 11), "java.lang.String");
+            HeapObject ho3 = new HeapObject(new ProgramPoint(varName1, 12), "java.lang.Number");
 
             List<EnvEntry> env1 = ImmutableList.of(
                     new EnvEntry(varName1, ho1),
@@ -133,7 +133,7 @@ class MergeServiceTest {
             EnvEntry mergedEnvEntry = mergedEnv.get(0);
             HeapObject newHeapObject = mergedEnvEntry.getHeapObject();
             assertThat(mergedEnvEntry.getVarName(), is(varName1));
-            assertSame(newHeapObject.getClazz(), Number.class);
+            assertSame(newHeapObject.getClazz(), "java.lang.Number");
             assertThat(newHeapObject.getProgramPoint().getLineNumber(), is(14));
             assertThat(newHeapObject.getProgramPoint().getVariableName(), is(varName1));
         }
@@ -143,10 +143,10 @@ class MergeServiceTest {
         void mergeEnvs_envsAreDifferent() {
             //given
             String varName1 = "v1";
-            HeapObject ho1 = new HeapObject(new ProgramPoint(varName1, 10), Integer.class);
+            HeapObject ho1 = new HeapObject(new ProgramPoint(varName1, 10), "int");
             String varName2 = "v2";
             String varName3 = "v3";
-            HeapObject ho2 = new HeapObject(new ProgramPoint(varName2, 11), String.class);
+            HeapObject ho2 = new HeapObject(new ProgramPoint(varName2, 11), "java.lang.String");
 
             List<EnvEntry> env1 = ImmutableList.of(
                     new EnvEntry(varName1, ho1),
@@ -171,43 +171,41 @@ class MergeServiceTest {
         @Test
         @DisplayName("correctly when first and second have common non-object class")
         void findLowestSuperClass_commonSuperClass() {
-            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Integer.class, Double.class);
+            String lowestSuperClass = mergeService.findLowestSuperClass("int", "java.lang.Double");
 
-            assertSame(lowestSuperClass, Number.class);
+            assertSame(lowestSuperClass, "java.lang.Number");
         }
 
         @Test
         @DisplayName("correctly when first is a subclass of second")
         void findLowestSuperClass_firstDerivableFromSecond() {
-            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Integer.class, Number.class);
+            String lowestSuperClass = mergeService.findLowestSuperClass("int", "java.lang.Number");
 
-            assertSame(lowestSuperClass, Number.class);
+            assertSame(lowestSuperClass, "java.lang.Number");
         }
 
         @Test
         @DisplayName("correctly when second is a subclass of first")
         void findLowestSuperClass_secondDerivableFromFirst() {
-            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(Number.class, Integer.class);
-
-            System.out.println(Integer.class.isAssignableFrom(Number.class));
-
-            assertSame(lowestSuperClass, Number.class);
+            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.Number", "int");
+            
+            assertSame(lowestSuperClass, "java.lang.Number");
         }
 
         @Test
         @DisplayName("correctly when classes have only Object as superclass")
         void findLowestSuperClass_notDerivableClasses() {
-            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(String.class, Integer.class);
+            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.String", "int");
 
-            assertSame(lowestSuperClass, Object.class);
+            assertSame(lowestSuperClass, "java.lang.Object");
         }
 
         @Test
         @DisplayName("correctly when classes are just the same")
         void findLowestSuperClass_sameClasses() {
-            Class<?> lowestSuperClass = mergeService.findLowestSuperClass(String.class, String.class);
+            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.String", "java.lang.String");
 
-            assertSame(lowestSuperClass, String.class);
+            assertSame(lowestSuperClass, "java.lang.String");
         }
     }
 }
