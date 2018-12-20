@@ -7,6 +7,7 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,7 +16,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@RequiredArgsConstructor
 public class MergeService {
+
+    private final SuperClassFinderService superClassFinderService;
 
     public Graph mergeGraphs(Graph g1, Graph g2) {
         Graph updatedGraph = g1.clone();
@@ -80,7 +84,7 @@ public class MergeService {
                     if (ho1.equals(ho2)) {
                         mergedEnv.add(env1Entry);
                     } else {
-                        String lowestSuperClass = findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
+                        String lowestSuperClass = superClassFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
                         ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
                         mergedEnv.add(new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)));
                     }
@@ -92,16 +96,5 @@ public class MergeService {
     @NotNull
     private Set<String> getKeys(List<EnvEntry> env) {
         return env.stream().map(EnvEntry::getVarName).collect(Collectors.toSet());
-    }
-
-    Class<?> findLowestSuperClass(Class<?> class1, Class<?> class2) {
-        while (!class1.isAssignableFrom(class2))
-            class1 = class1.getSuperclass();
-        return class1;
-    }
-
-    String findLowestSuperClass(String class1, String class2) {
-        //TODO
-        return null;
     }
 }

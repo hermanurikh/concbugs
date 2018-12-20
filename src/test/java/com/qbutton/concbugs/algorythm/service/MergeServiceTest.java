@@ -8,9 +8,13 @@ import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,11 +26,21 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @DisplayName("MergeService class")
+@ExtendWith(MockitoExtension.class)
 class MergeServiceTest {
 
-    private final MergeService mergeService = new MergeService();
+    private MergeService mergeService;
+
+    @Mock
+    private SuperClassFinderService superClassFinderService;
+
+    @BeforeEach
+    void init() {
+        mergeService = new MergeService(superClassFinderService);
+    }
 
     @Test
     @DisplayName("merges graphs correctly")
@@ -121,6 +135,8 @@ class MergeServiceTest {
                     new EnvEntry(varName1, ho3),
                     new EnvEntry(varName2, ho2)
             );
+            when(superClassFinderService.findLowestSuperClass("int", "java.lang.Number"))
+                    .thenReturn("java.lang.Number");
 
             //when
             List<EnvEntry> mergedEnv = mergeService.mergeEnvs(env1, env2, 14);
@@ -161,51 +177,6 @@ class MergeServiceTest {
             //then
             assertThrows(AlgorithmValidationException.class,
                     () -> mergeService.mergeEnvs(env1, env2, 30));
-        }
-    }
-
-    @Nested
-    @DisplayName("finds lowest superclass")
-    class FindLowestSuperClass {
-
-        @Test
-        @DisplayName("correctly when first and second have common non-object class")
-        void findLowestSuperClass_commonSuperClass() {
-            String lowestSuperClass = mergeService.findLowestSuperClass("int", "java.lang.Double");
-
-            assertSame(lowestSuperClass, "java.lang.Number");
-        }
-
-        @Test
-        @DisplayName("correctly when first is a subclass of second")
-        void findLowestSuperClass_firstDerivableFromSecond() {
-            String lowestSuperClass = mergeService.findLowestSuperClass("int", "java.lang.Number");
-
-            assertSame(lowestSuperClass, "java.lang.Number");
-        }
-
-        @Test
-        @DisplayName("correctly when second is a subclass of first")
-        void findLowestSuperClass_secondDerivableFromFirst() {
-            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.Number", "int");
-            
-            assertSame(lowestSuperClass, "java.lang.Number");
-        }
-
-        @Test
-        @DisplayName("correctly when classes have only Object as superclass")
-        void findLowestSuperClass_notDerivableClasses() {
-            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.String", "int");
-
-            assertSame(lowestSuperClass, "java.lang.Object");
-        }
-
-        @Test
-        @DisplayName("correctly when classes are just the same")
-        void findLowestSuperClass_sameClasses() {
-            String lowestSuperClass = mergeService.findLowestSuperClass("java.lang.String", "java.lang.String");
-
-            assertSame(lowestSuperClass, "java.lang.String");
         }
     }
 }

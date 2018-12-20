@@ -3,29 +3,20 @@ package com.qbutton.concbugs.inspection.deadlock;
 import com.intellij.codeInsight.daemon.GroupNames;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.InspectionsBundle;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.JavaTokenType;
 import com.intellij.psi.PsiBinaryExpression;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiCodeBlock;
-import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiLiteralExpression;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodCallExpression;
-import com.intellij.psi.PsiPrefixExpression;
-import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.ui.DocumentAdapter;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +67,6 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
     //JavaFindUsagesProvider::canFindUsagesFor
     //ReferencesSearch::search
 
-    @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
@@ -87,8 +77,8 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
 
                 PsiCodeBlock body = method.getBody();
                 if (body != null) {
-                    PsiStatement[] statements = body.getStatements();
-                    System.out.println();
+                    body.getStatements();
+                    //todo
                 }
             }
 
@@ -116,47 +106,6 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
         return expr instanceof PsiLiteralExpression && "null".equals(expr.getText());
     }
 
-    private static class MyQuickFix implements LocalQuickFix {
-        @NotNull
-        public String getName() {
-            // The test (see the TestThisPlugin class) uses this string to identify the quick fix action.
-            return InspectionsBundle.message("inspection.comparing.references.use.quickfix");
-        }
-
-
-        public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-            try {
-                PsiBinaryExpression binaryExpression = (PsiBinaryExpression) descriptor.getPsiElement();
-                IElementType opSign = binaryExpression.getOperationTokenType();
-                PsiExpression lExpr = binaryExpression.getLOperand();
-                PsiExpression rExpr = binaryExpression.getROperand();
-                if (rExpr == null)
-                    return;
-
-                PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-                PsiMethodCallExpression equalsCall =
-                        (PsiMethodCallExpression) factory.createExpressionFromText("a.equals(b)", null);
-
-                equalsCall.getMethodExpression().getQualifierExpression().replace(lExpr);
-                equalsCall.getArgumentList().getExpressions()[0].replace(rExpr);
-
-                PsiExpression result = (PsiExpression) binaryExpression.replace(equalsCall);
-
-                if (opSign == JavaTokenType.NE) {
-                    PsiPrefixExpression negation = (PsiPrefixExpression) factory.createExpressionFromText("!a", null);
-                    negation.getOperand().replace(result);
-                    result.replace(negation);
-                }
-            } catch (IncorrectOperationException e) {
-                LOG.error(e);
-            }
-        }
-
-        @NotNull
-        public String getFamilyName() {
-            return getName();
-        }
-    }
 
     public JComponent createOptionsPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));

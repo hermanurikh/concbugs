@@ -29,12 +29,14 @@ import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 public class StatementParser {
 
     private PsiToAlgorythmFacade psiToAlgorythmFacade;
