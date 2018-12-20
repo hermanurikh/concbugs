@@ -7,7 +7,9 @@ import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -143,5 +145,31 @@ class StatementShrinkerTest {
         Statement statement = statementShrinker.shrinkStatements(Collections.emptyList());
 
         assertNull(statement);
+    }
+
+    @Test
+    @DisplayName("shrinks correctly when first statement is null")
+    void shrink_firstNullStatement_success() {
+        Statement statement1 = new WaitStatement(2, "1");
+        List<Statement> statements = new ArrayList<>(2);
+        statements.add(null);
+        statements.add(statement1);
+
+        Statement statement = statementShrinker.shrinkStatements(statements);
+
+        assertThat(statement).isEqualTo(statement1);
+    }
+
+    @Test
+    @DisplayName("shrinks correctly when second statement is null")
+    void shrink_secondNullStatement_success() {
+        Statement statement1 = new WaitStatement(2, "1");
+        List<Statement> statements = new ArrayList<>(2);
+        statements.add(statement1);
+        statements.add(null);
+
+        Statement statement = statementShrinker.shrinkStatements(statements);
+
+        assertThat(statement).isEqualTo(statement1);
     }
 }

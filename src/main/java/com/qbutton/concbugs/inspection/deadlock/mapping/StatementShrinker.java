@@ -24,8 +24,10 @@ class StatementShrinker {
                 Statement first = statementsToShrink.get(i);
                 Statement second = statementsToShrink.get(i + 1);
 
-                SequentialStatement sequentialStatement = new SequentialStatement(first, second);
-                currentStatements.add(sequentialStatement);
+                Statement unionStatement = getStatement(first, second);
+                if (unionStatement != null) {
+                    currentStatements.add(unionStatement);
+                }
             }
             if (currentSize % 2 == 1) {
                 currentStatements.add(statementsToShrink.get(currentSize - 1));
@@ -35,5 +37,19 @@ class StatementShrinker {
         }
 
         return statementsToShrink.get(0);
+    }
+
+    private Statement getStatement(Statement first, Statement second) {
+        if (first != null && second != null) {
+            return new SequentialStatement(first, second);
+        }
+        if (first == null) {
+            if (second == null) {
+                return null;
+            }
+            return second;
+        } else {
+            return first;
+        }
     }
 }

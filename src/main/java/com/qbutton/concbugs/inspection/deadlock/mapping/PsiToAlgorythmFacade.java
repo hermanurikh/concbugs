@@ -14,6 +14,7 @@ import java.util.function.BiConsumer;
 public class PsiToAlgorythmFacade {
 
     private final StatementMapper statementMapper;
+    private final StatementShrinker statementShrinker;
 
     public Statement parseStatements(PsiCodeBlock psiCodeBlock) {
         PsiStatement[] statements = psiCodeBlock.getStatements();
@@ -26,7 +27,7 @@ public class PsiToAlgorythmFacade {
                 });
 
 
-        return shrinkStatements(resultStatements);
+        return statementShrinker.shrinkStatements(resultStatements);
     }
 
     public Statement parseStatement(PsiStatement statement) {
@@ -35,12 +36,7 @@ public class PsiToAlgorythmFacade {
         BiConsumer<PsiStatement, List<Statement>> parseFunction = statementMapper.getParser(statement);
         parseFunction.accept(statement, resultStatements);
 
-        return shrinkStatements(resultStatements);
-    }
-
-    private Statement shrinkStatements(List<Statement> statements) {
-        //todo
-        return statements.get(0);
+        return statementShrinker.shrinkStatements(resultStatements);
     }
 
 }

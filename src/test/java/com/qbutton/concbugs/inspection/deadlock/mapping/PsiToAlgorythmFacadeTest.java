@@ -10,10 +10,13 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import com.qbutton.concbugs.algorythm.dto.MethodDeclaration;
 import com.qbutton.concbugs.algorythm.dto.statement.BranchStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement;
+import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
+import com.qbutton.concbugs.algorythm.dto.statement.SequentialStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
@@ -36,7 +39,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
     PsiToAlgorythmFacadeTest() {
         StatementParser statementParser = new StatementParser();
         StatementMapper statementMapper = new StatementMapper(statementParser);
-        psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementMapper);
+        psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementMapper, new StatementShrinker());
 
         statementParser.setPsiToAlgorythmFacade(psiToAlgorythmFacade);
     }
@@ -194,16 +197,63 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
         }
     }
 
+    @Nested
+    @DisplayName("parses method statement correctly")
+    class ParseMethodStatements {
+
+        @Test
+        @DisplayName("when it is a simple method call with new var declaration")
+        void method_varDeclaration_success() {
+            Statement readStatement = readSingleStatement("Method_1.java");
+            assertTrue(readStatement instanceof SequentialStatement);
+            assertThat(((SequentialStatement) readStatement).getStmt1() instanceof MethodStatement);
+            assertThat(((SequentialStatement) readStatement).getStmt2() instanceof DeclarationStatement);
+            MethodStatement result = (MethodStatement) ((SequentialStatement) readStatement).getStmt1();
+            assertThat(result.getLineNumber()).isEqualTo(119);
+            assertThat(result.getVarName()).isEqualTo("b");
+            assertThat(result.getReturnType()).isEqualTo("java.util.Date");
+            assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
+            MethodDeclaration methodDeclaration = result.getMethodDeclarations().get(0);
+            assertThat(methodDeclaration.getMethodName()).isEqualTo("getSomeDate");
+            assertThat(methodDeclaration.getVariables().size()).isEqualTo(2);
+            assertThat(methodDeclaration.getVariables().get(0).getVariableClass()).isEqualTo("Method_1");
+            assertThat(methodDeclaration.getVariables().get(0).getVariableName()).isEqualTo("this");
+            assertThat(methodDeclaration.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.Object");
+            assertThat(methodDeclaration.getVariables().get(1).getVariableName()).isEqualTo("expected");
+            DeclarationStatement declarationStatement = (DeclarationStatement) ((SequentialStatement) readStatement).getStmt2();
+            assertThat(declarationStatement.getLineNumber()).isEqualTo(115);
+            assertThat(declarationStatement.getVarName()).isEqualTo("b");
+            assertThat(declarationStatement.getClazz()).isEqualTo("java.util.Date");
+        }
+
+        @Test
+        @DisplayName("when it is a simple method call with existing var initialization")
+        void method_varInitialization_success() {
+            Statement readStatement = readSingleStatement("Method_2.java");
+            assertTrue(readStatement instanceof MethodStatement);
+            MethodStatement result = (MethodStatement) readStatement;
+            assertThat(result.getLineNumber()).isEqualTo(97);
+            assertThat(result.getVarName()).isEqualTo("b");
+            assertThat(result.getReturnType()).isEqualTo("java.util.Date");
+            assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
+            MethodDeclaration methodDeclaration = result.getMethodDeclarations().get(0);
+            assertThat(methodDeclaration.getMethodName()).isEqualTo("getSomeDate");
+            assertThat(methodDeclaration.getVariables().size()).isEqualTo(2);
+            assertThat(methodDeclaration.getVariables().get(0).getVariableClass()).isEqualTo("Method_2");
+            assertThat(methodDeclaration.getVariables().get(0).getVariableName()).isEqualTo("this");
+            assertThat(methodDeclaration.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.Object");
+            assertThat(methodDeclaration.getVariables().get(1).getVariableName()).isEqualTo("expected");
+        }
+    }
+
     private Statement readSingleStatement(String fileName) {
 
         try {
             PsiFile[] psiFiles = myFixture.configureByFiles(fileName);
-            //PsiReference psiReference =  configureByFile(fileName);
             AtomicReference<Statement> statement = new AtomicReference<>();
 
             ApplicationManagerEx.getApplicationEx().runReadAction(() -> {
                 PsiJavaFile file = (PsiJavaFile) psiFiles[0];
-                //PsiJavaFile file = (PsiJavaFile) psiReference;
                 PsiClass clazz = file.getClasses()[0];
                 PsiMethod analyzedMethod = clazz.getMethods()[0];
                 statement.set(psiToAlgorythmFacade.parseStatements(analyzedMethod.getBody()));
