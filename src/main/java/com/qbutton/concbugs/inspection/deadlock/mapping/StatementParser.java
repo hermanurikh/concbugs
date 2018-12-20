@@ -1,6 +1,5 @@
 package com.qbutton.concbugs.inspection.deadlock.mapping;
 
-import com.google.common.collect.ImmutableList;
 import com.intellij.psi.PsiAssignmentExpression;
 import com.intellij.psi.PsiBlockStatement;
 import com.intellij.psi.PsiCodeBlock;
@@ -13,14 +12,13 @@ import com.intellij.psi.PsiLoopStatement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiNewExpression;
-import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiSynchronizedStatement;
 import com.intellij.psi.impl.source.tree.java.PsiLocalVariableImpl;
 import com.intellij.psi.search.searches.OverridingMethodsSearch;
-import com.intellij.util.Query;
 import com.qbutton.concbugs.algorythm.dto.MethodDeclaration;
+import com.qbutton.concbugs.algorythm.dto.MethodDeclaration.Variable;
 import com.qbutton.concbugs.algorythm.dto.statement.BranchStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
@@ -34,6 +32,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -80,63 +79,34 @@ public class StatementParser {
         }
     }
 
+    @SuppressFBWarnings("UC_USELESS_OBJECT")
     private void parseMethodCallExpression(PsiMethodCallExpression expression, List<Statement> statements, String resultVarName) {
         PsiMethod psiMethod = expression.resolveMethod();
 
         String methodName = psiMethod.getName();
-        PsiParameter[] parameters = psiMethod.getParameterList().getParameters();
 
         int textOffset = expression.getTextOffset();
 
-        if ("wait".equals(methodName) && parameters.length == 0) {
+        if ("wait".equals(methodName) && psiMethod.getParameterList().getParameters().length == 0) {
             PsiElement firstChild = expression.getFirstChild();
             statements.add(new WaitStatement(textOffset, firstChild.getFirstChild().getText()));
         } else {
-            String className = psiMethod.getContainingClass().getQualifiedName();
-            PsiCodeBlock actualBody = psiMethod.getBody();
-            if (actualBody == null) {
-                //this is a library, don't analyze it
+            if (isLibraryMethod(psiMethod)) {
                 return;
             }
-            Statement methodBody = psiToAlgorythmFacade.parseStatements(actualBody);
 
-            String synchronizationVarName;
+            List<MethodDeclaration> methodDeclarations = new ArrayList<>();
+            List<PsiMethod> methodsToParse = new ArrayList<>();
 
-            if (psiMethod.getModifierList().hasModifierProperty("static")) {
-                synchronizationVarName = className + ".class";
-            } else {
-                synchronizationVarName = "this";
-            }
+            methodsToParse.add(psiMethod);
+            methodsToParse.addAll(OverridingMethodsSearch.search(psiMethod).findAll());
 
-            //add this or class variable as a first argument
-            MethodDeclaration.Variable firstVariable = new MethodDeclaration.Variable(synchronizationVarName, className);
-
-            if (psiMethod.getModifierList().hasModifierProperty("synchronized")) {
-                //desugaring
-                methodBody = new SynchronizedStatement(
-                        textOffset, synchronizationVarName, methodBody);
-            }
-
-            List<MethodDeclaration.Variable> variables = new ArrayList<>();
-            variables.add(firstVariable);
-
-            variables.addAll(
-                    Arrays.stream(parameters)
-                            .map(param -> new MethodDeclaration.Variable(param.getName(), param.getType().getCanonicalText()))
-                            .collect(Collectors.toList())
-            );
-
-            Query<PsiMethod> psiMethods = OverridingMethodsSearch.search(psiMethod);
-            psiMethods.findAll();
-
-            MethodDeclaration methodDeclaration = new MethodDeclaration(
-                    methodName, variables, methodBody
-            );
+            methodsToParse.forEach(addMethodDeclarationIfNeeded(methodName, textOffset, methodDeclarations));
 
             String returnType = psiMethod.getReturnType().getCanonicalText();
 
             statements.add(new MethodStatement(
-                    textOffset, resultVarName, ImmutableList.of(methodDeclaration), returnType)
+                    textOffset, resultVarName, methodDeclarations, returnType)
             );
         }
     }
@@ -220,6 +190,52 @@ public class StatementParser {
         statements.add(statement);
     }
 
+    private Consumer<PsiMethod> addMethodDeclarationIfNeeded(String methodName,
+                                                             int textOffset,
+                                                             List<MethodDeclaration> methodDeclarations) {
+        return method -> {
+            if (isLibraryMethod(method)) {
+                return;
+            }
+
+            String className = method.getContainingClass().getQualifiedName();
+
+            String synchronizationVarName = method.getModifierList().hasModifierProperty("static")
+                    ? className + ".class"
+                    : "this";
+
+            //add this or class variable as a first argument for synchronization
+            List<Variable> variables = new ArrayList<>();
+            variables.add(new Variable(synchronizationVarName, className));
+
+            variables.addAll(
+                    Arrays.stream(method.getParameterList().getParameters())
+                            .map(param -> new Variable(param.getName(), param.getType().getCanonicalText()))
+                            .collect(Collectors.toList())
+            );
+
+            PsiCodeBlock actualBody = method.getBody();
+            Statement methodBody = psiToAlgorythmFacade.parseStatements(actualBody);
+
+            methodBody = desugarSynchronizedIfNeeded(textOffset, method, synchronizationVarName, methodBody);
+
+            methodDeclarations.add(
+                    new MethodDeclaration(methodName, variables, methodBody)
+            );
+        };
+    }
+
+    private Statement desugarSynchronizedIfNeeded(int textOffset,
+                                                  PsiMethod method,
+                                                  String synchronizationVarName,
+                                                  Statement methodBody) {
+        if (method.getModifierList().hasModifierProperty("synchronized")) {
+            methodBody = new SynchronizedStatement(
+                    textOffset, synchronizationVarName, methodBody);
+        }
+        return methodBody;
+    }
+
     private String getVarClass(PsiLocalVariableImpl localVariable) {
         return localVariable.getType().getCanonicalText();
     }
@@ -238,5 +254,9 @@ public class StatementParser {
 
     public void setPsiToAlgorythmFacade(PsiToAlgorythmFacade psiToAlgorythmFacade) {
         this.psiToAlgorythmFacade = psiToAlgorythmFacade;
+    }
+
+    private boolean isLibraryMethod(PsiMethod psiMethod) {
+        return psiMethod.getBody() == null;
     }
 }

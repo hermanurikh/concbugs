@@ -264,6 +264,32 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(methodDeclaration.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.Object");
             assertThat(methodDeclaration.getVariables().get(1).getVariableName()).isEqualTo("expected");
         }
+
+        @Test
+        @DisplayName("when it is a method call and there is an overriding method")
+        void method_overridenMethodExists() {
+            Statement readStatement = readSingleStatementFromFirstMethod("Method_3.java");
+            assertInstanceOf(readStatement, MethodStatement.class);
+            MethodStatement result = (MethodStatement) readStatement;
+            assertThat(result.getReturnType()).isEqualTo("void");
+            assertThat(result.getMethodDeclarations().size()).isEqualTo(2);
+
+            MethodDeclaration first = result.getMethodDeclarations().get(0);
+            assertThat(first.getMethodName()).isEqualTo("doSomething");
+            assertThat(first.getVariables().size()).isEqualTo(2);
+            assertThat(first.getVariables().get(0).getVariableClass()).isEqualTo("mapping.Method_3");
+            assertThat(first.getVariables().get(0).getVariableName()).isEqualTo("this");
+            assertThat(first.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.String");
+            assertThat(first.getVariables().get(1).getVariableName()).isEqualTo("expected");
+
+            MethodDeclaration second = result.getMethodDeclarations().get(1);
+            assertThat(second.getMethodName()).isEqualTo("doSomething");
+            assertThat(second.getVariables().size()).isEqualTo(2);
+            assertThat(second.getVariables().get(0).getVariableClass()).isEqualTo("mapping.Method_3.InnerClass");
+            assertThat(second.getVariables().get(0).getVariableName()).isEqualTo("this");
+            assertThat(second.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.String");
+            assertThat(second.getVariables().get(1).getVariableName()).isEqualTo("expectedOverriden");
+        }
     }
 
     @Nested
