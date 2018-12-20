@@ -3,6 +3,7 @@ package com.qbutton.concbugs.inspection.deadlock.mapping;
 import com.google.common.collect.ImmutableList;
 import com.intellij.psi.PsiAssignmentExpression;
 import com.intellij.psi.PsiBlockStatement;
+import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
@@ -90,7 +91,12 @@ public class StatementParser {
             statements.add(new WaitStatement(textOffset, firstChild.getFirstChild().getText()));
         } else {
             String className = psiMethod.getContainingClass().getQualifiedName();
-            Statement methodBody = psiToAlgorythmFacade.parseStatements(psiMethod.getBody());
+            PsiCodeBlock actualBody = psiMethod.getBody();
+            if (actualBody == null) {
+                //this is a library, don't analyze it
+                return;
+            }
+            Statement methodBody = psiToAlgorythmFacade.parseStatements(actualBody);
 
             String synchronizationVarName;
 
@@ -144,20 +150,17 @@ public class StatementParser {
             PsiLocalVariableImpl localVar = (PsiLocalVariableImpl) declaredElement;
             PsiExpression initializer = localVar.getInitializer();
 
-            DeclarationStatement statement;
 
             if (initializer instanceof PsiReferenceExpression) {
-                statement = new DeclarationStatement(
-                        localVar.getTextOffset(), localVar.getName(), getVarClass((PsiReferenceExpression) initializer));
+                statements.add(new InnerAssignmentStatement(
+                        localVar.getTextOffset(), localVar.getName(), getVarClass((PsiReferenceExpression) initializer)));
             } else {
+                statements.add(new DeclarationStatement(
+                        localVar.getTextOffset(), localVar.getName(), getVarClass(localVar)));
                 if (initializer instanceof PsiMethodCallExpression) {
                     parseMethodCallExpression((PsiMethodCallExpression) initializer, statements, localVar.getName());
                 }
-                statement = new DeclarationStatement(
-                        localVar.getTextOffset(), localVar.getName(), getVarClass(localVar));
             }
-
-            statements.add(statement);
         }
     }
 
@@ -202,7 +205,15 @@ public class StatementParser {
 
     void parseLoopStatement(PsiLoopStatement psiLoopStatement, List<Statement> statements) {
         PsiStatement body = psiLoopStatement.getBody();
-        Statement statement = psiToAlgorythmFacade.parseStatement(body);
+        if (body == null) return;
+
+        PsiElement firstChild = body.getFirstChild();
+
+        if (!(firstChild instanceof PsiCodeBlock)) {
+            throw new RuntimeException("PsiLoopStatement body firstChild is not a PsiCodeBlock: " + firstChild);
+        }
+
+        Statement statement = psiToAlgorythmFacade.parseStatements((PsiCodeBlock) firstChild);
 
         statements.add(statement);
     }
