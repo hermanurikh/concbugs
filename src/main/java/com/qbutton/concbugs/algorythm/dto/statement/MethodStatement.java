@@ -2,6 +2,7 @@ package com.qbutton.concbugs.algorythm.dto.statement;
 
 import com.qbutton.concbugs.algorythm.dto.MethodDeclaration;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * v = method(v1, ... vn).
  */
 @Getter
+@ToString(callSuper = true)
 public final class MethodStatement extends Statement {
     //todo where searching of all method declarations will be implemented?
     private final List<MethodDeclaration> methodDeclarations;

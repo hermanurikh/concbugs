@@ -1,12 +1,14 @@
 package com.qbutton.concbugs.algorythm.dto.statement;
 
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Sequential statement (to be executed sequentially), e.g.:
  * statement1; statement2.
  */
 @Getter
+@ToString(callSuper = true)
 public final class SequentialStatement extends Statement {
     private final Statement stmt1;
     private final Statement stmt2;
