@@ -16,4 +16,10 @@ public final class SequentialStatement extends Statement {
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;
     }
+
+    public SequentialStatement(Statement stmt1, Statement stmt2) {
+        super(0, "any");
+        this.stmt1 = stmt1;
+        this.stmt2 = stmt2;
+    }
 }
