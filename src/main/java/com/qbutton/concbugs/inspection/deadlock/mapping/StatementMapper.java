@@ -8,17 +8,19 @@ import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiSynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 @RequiredArgsConstructor
-public class StatementMapper {
+@Setter
+class StatementMapper {
 
     private static final Logger LOGGER = Logger.getLogger(StatementMapper.class.getName());
 
-    private final StatementParser statementParser;
+    private StatementParser statementParser;
 
     BiConsumer<PsiStatement, List<Statement>> getParser(PsiStatement psiStatement) {
         if (psiStatement instanceof PsiDeclarationStatement) {

@@ -42,11 +42,11 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
     private MethodDeclaration getDateMethodDeclaration;
 
     PsiToAlgorythmFacadeTest() {
-        StatementParser statementParser = new StatementParser();
-        StatementMapper statementMapper = new StatementMapper(statementParser);
-        psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementMapper, new StatementShrinker());
+        StatementMapper statementMapper = new StatementMapper();
+        StatementParser statementParser = new StatementParser(new StatementShrinker(), statementMapper);
+        statementMapper.setStatementParser(statementParser);
 
-        statementParser.setPsiToAlgorythmFacade(psiToAlgorythmFacade);
+        psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementParser);
 
         initTest2MethodDeclaration();
         initGetDateMethodDeclaration();
@@ -473,7 +473,8 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
                 PsiJavaFile file = (PsiJavaFile) psiFiles[0];
                 PsiClass clazz = file.getClasses()[0];
                 PsiMethod analyzedMethod = clazz.getMethods()[0];
-                statement.set(psiToAlgorythmFacade.parseStatements(analyzedMethod.getBody()));
+                MethodStatement parsedMethodStatement = psiToAlgorythmFacade.parseMethod(analyzedMethod);
+                statement.set(parsedMethodStatement.getMethodDeclarations().get(0).getMethodBody());
             });
 
             return statement.get();

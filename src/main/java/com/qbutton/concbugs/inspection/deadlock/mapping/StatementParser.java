@@ -28,17 +28,21 @@ import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-public class StatementParser {
+@SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "UC_USELESS_OBJECT"})
+@RequiredArgsConstructor
+class StatementParser {
 
-    private PsiToAlgorythmFacade psiToAlgorythmFacade;
+    private final StatementShrinker statementShrinker;
+    private final StatementMapper statementMapper;
 
     private void parseAssignmentExpression(PsiAssignmentExpression expression, List<Statement> statements) {
         if (!(expression.getFirstChild() instanceof PsiReferenceExpression)) {
@@ -79,15 +83,36 @@ public class StatementParser {
         }
     }
 
+    private Statement parseStatements(PsiCodeBlock psiCodeBlock) {
+        PsiStatement[] statements = psiCodeBlock.getStatements();
+        List<Statement> resultStatements = new ArrayList<>();
+
+        Arrays.stream(statements)
+                .forEach(psiStatement -> {
+                    Statement statement = parseStatement(psiStatement);
+                    resultStatements.add(statement);
+                });
+
+
+        return statementShrinker.shrinkStatements(resultStatements);
+    }
+
+    private Statement parseStatement(PsiStatement statement) {
+        List<Statement> resultStatements = new ArrayList<>();
+
+        BiConsumer<PsiStatement, List<Statement>> parseFunction = statementMapper.getParser(statement);
+        parseFunction.accept(statement, resultStatements);
+
+        return statementShrinker.shrinkStatements(resultStatements);
+    }
+
     @SuppressFBWarnings("UC_USELESS_OBJECT")
     private void parseMethodCallExpression(PsiMethodCallExpression expression, List<Statement> statements, String resultVarName) {
         PsiMethod psiMethod = expression.resolveMethod();
 
-        String methodName = psiMethod.getName();
-
         int textOffset = expression.getTextOffset();
 
-        if ("wait".equals(methodName) && psiMethod.getParameterList().getParameters().length == 0) {
+        if ("wait".equals(psiMethod.getName()) && psiMethod.getParameterList().getParameters().length == 0) {
             PsiElement firstChild = expression.getFirstChild();
             statements.add(new WaitStatement(textOffset, firstChild.getFirstChild().getText()));
         } else {
@@ -95,20 +120,30 @@ public class StatementParser {
                 return;
             }
 
-            List<MethodDeclaration> methodDeclarations = new ArrayList<>();
-            List<PsiMethod> methodsToParse = new ArrayList<>();
-
-            methodsToParse.add(psiMethod);
-            methodsToParse.addAll(OverridingMethodsSearch.search(psiMethod).findAll());
-
-            methodsToParse.forEach(addMethodDeclarationIfNeeded(methodName, textOffset, methodDeclarations));
-
-            String returnType = psiMethod.getReturnType().getCanonicalText();
-
-            statements.add(new MethodStatement(
-                    textOffset, resultVarName, methodDeclarations, returnType)
-            );
+            statements.add(parseMethod(psiMethod, resultVarName, textOffset));
         }
+    }
+
+    private MethodStatement parseMethod(PsiMethod psiMethod, String resultVarName, Integer initialTextOffset) {
+        List<MethodDeclaration> methodDeclarations = new ArrayList<>();
+        List<PsiMethod> methodsToParse = new ArrayList<>();
+
+        int textOffset = initialTextOffset == null
+                ? psiMethod.getTextOffset()
+                : initialTextOffset;
+
+        methodsToParse.add(psiMethod);
+        methodsToParse.addAll(OverridingMethodsSearch.search(psiMethod).findAll());
+
+        methodsToParse.forEach(addMethodDeclarationIfNeeded(psiMethod.getName(), textOffset, methodDeclarations));
+
+        String returnType = psiMethod.getReturnType().getCanonicalText();
+
+        return new MethodStatement(textOffset, resultVarName, methodDeclarations, returnType);
+    }
+
+    MethodStatement parseMethod(PsiMethod psiMethod) {
+        return parseMethod(psiMethod, null, null);
     }
 
     void parseDeclarationStatement(PsiDeclarationStatement psiDeclarationStatement, List<Statement> statements) {
@@ -148,7 +183,7 @@ public class StatementParser {
     void parseIfStatement(PsiIfStatement psiIfStatement, List<Statement> statements) {
         List<Statement> bodies = Arrays.stream(psiIfStatement.getChildren())
                 .filter(child -> child instanceof PsiBlockStatement)
-                .map(ifBlock -> psiToAlgorythmFacade.parseStatements(((PsiBlockStatement) ifBlock).getCodeBlock()))
+                .map(ifBlock -> this.parseStatements(((PsiBlockStatement) ifBlock).getCodeBlock()))
                 .collect(Collectors.toList());
 
         Statement ifStatement = null;
@@ -172,7 +207,7 @@ public class StatementParser {
         statements.add(new SynchronizedStatement(
                 psiSynchronizedStatement.getTextOffset(),
                 psiSynchronizedStatement.getLockExpression().getText(),
-                psiToAlgorythmFacade.parseStatements(psiSynchronizedStatement.getBody())));
+                this.parseStatements(psiSynchronizedStatement.getBody())));
     }
 
     void parseLoopStatement(PsiLoopStatement psiLoopStatement, List<Statement> statements) {
@@ -185,7 +220,7 @@ public class StatementParser {
             throw new RuntimeException("PsiLoopStatement body firstChild is not a PsiCodeBlock: " + firstChild);
         }
 
-        Statement statement = psiToAlgorythmFacade.parseStatements((PsiCodeBlock) firstChild);
+        Statement statement = this.parseStatements((PsiCodeBlock) firstChild);
 
         statements.add(statement);
     }
@@ -215,7 +250,7 @@ public class StatementParser {
             );
 
             PsiCodeBlock actualBody = method.getBody();
-            Statement methodBody = psiToAlgorythmFacade.parseStatements(actualBody);
+            Statement methodBody = this.parseStatements(actualBody);
 
             methodBody = desugarSynchronizedIfNeeded(textOffset, method, synchronizationVarName, methodBody);
 
@@ -250,10 +285,6 @@ public class StatementParser {
 
     private String doGetVarClass(PsiExpression expression) {
         return expression.getType().getCanonicalText();
-    }
-
-    public void setPsiToAlgorythmFacade(PsiToAlgorythmFacade psiToAlgorythmFacade) {
-        this.psiToAlgorythmFacade = psiToAlgorythmFacade;
     }
 
     private boolean isLibraryMethod(PsiMethod psiMethod) {
