@@ -1,17 +1,15 @@
 package com.qbutton.concbugs.inspection.deadlock.mapping;
 
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.JavaAwareProjectJdkTableImpl;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.JavaTestFixtureFactory;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import com.intellij.testFramework.fixtures.TestFixtureBuilder;
-import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl;
 import com.qbutton.concbugs.algorythm.dto.statement.BranchStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
@@ -19,6 +17,7 @@ import com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,25 +33,28 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
     private PsiToAlgorythmFacade psiToAlgorythmFacade;
 
-    private CodeInsightTestFixture testFixture;
-
-
-    @BeforeEach
-    public void setUp() throws Exception {
+    PsiToAlgorythmFacadeTest() {
         StatementParser statementParser = new StatementParser();
         StatementMapper statementMapper = new StatementMapper(statementParser);
         psiToAlgorythmFacade = new PsiToAlgorythmFacade(statementMapper);
 
         statementParser.setPsiToAlgorythmFacade(psiToAlgorythmFacade);
+    }
 
-        IdeaTestFixtureFactory factory = IdeaTestFixtureFactory.getFixtureFactory();
-        TestFixtureBuilder<IdeaProjectTestFixture> fixtureBuilder =
-                factory.createLightFixtureBuilder(JAVA_8);
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new ProjectDescriptor(LanguageLevel.HIGHEST) {
+            @Override
+            public Sdk getSdk() {
+                return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
+            }
+        };
+    }
 
-        final IdeaProjectTestFixture fixture = fixtureBuilder.getFixture();
-        testFixture = JavaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(fixture, new LightTempDirTestFixtureImpl(true));
-        testFixture.setTestDataPath("src/test/resources/mapping/");
-        testFixture.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
     }
 
     @Override
@@ -62,7 +64,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
     @AfterEach
     public void tearDown() throws Exception {
-        testFixture.tearDown();
+        super.tearDown();
     }
 
     @Nested
@@ -187,7 +189,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatement("Wait_1.java");
             assertTrue(readStatement instanceof WaitStatement);
             WaitStatement result = (WaitStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(77);
+            assertThat(result.getLineNumber()).isEqualTo(98);
             assertThat(result.getVarName()).isEqualTo("a");
         }
     }
@@ -195,7 +197,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
     private Statement readSingleStatement(String fileName) {
 
         try {
-            PsiFile[] psiFiles = testFixture.configureByFiles(fileName);
+            PsiFile[] psiFiles = myFixture.configureByFiles(fileName);
             //PsiReference psiReference =  configureByFile(fileName);
             AtomicReference<Statement> statement = new AtomicReference<>();
 
@@ -209,20 +211,8 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
             return statement.get();
         } catch (Exception ex) {
+            fail(ex.getMessage());
             return null;
         }
-
     }
-
-    /*@Override
-    protected Sdk getTestProjectJdk() {
-        return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
-    }*/
-
-
-
-    /*@Override
-    protected Sdk getSdk() {
-        return JavaAwareProjectJdkTableImpl.getInstanceEx().getInternalJdk();
-    }*/
 }

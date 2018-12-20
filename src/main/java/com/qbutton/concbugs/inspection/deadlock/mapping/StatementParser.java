@@ -87,7 +87,7 @@ public class StatementParser {
 
         if ("wait".equals(methodName) && parameters.length == 0) {
             PsiElement firstChild = expression.getFirstChild();
-            statements.add(new WaitStatement(textOffset, firstChild.getText()));
+            statements.add(new WaitStatement(textOffset, firstChild.getFirstChild().getText()));
         } else {
             String className = psiMethod.getContainingClass().getQualifiedName();
             Statement methodBody = psiToAlgorythmFacade.parseStatements(psiMethod.getBody());
