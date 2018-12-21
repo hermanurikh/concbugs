@@ -6,9 +6,9 @@ import com.google.common.collect.Sets;
 import com.qbutton.concbugs.algorythm.dto.EnvEntry;
 import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
+import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
-import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import com.qbutton.concbugs.algorythm.service.VisitorService;
 import lombok.RequiredArgsConstructor;
 
@@ -17,21 +17,40 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 public final class SynchronizedStatementProcessor extends AbstractStatementProcessor<SynchronizedStatement> {
+
+    private static final Logger LOGGER = Logger.getLogger(SynchronizedStatementProcessor.class.getName());
 
     private final VisitorService visitorService;
 
     @Override
     State process(SynchronizedStatement statement, State originalState) {
 
-        HeapObject heapObject = originalState.getEnvironment().stream()
+        Optional<HeapObject> hoOptional = originalState.getEnvironment().stream()
                 .filter(envEntry -> statement.getVarName().equals(envEntry.getVarName()))
                 .map(EnvEntry::getHeapObject)
-                .findAny()
-                .orElseThrow(() -> new AlgorithmValidationException("no envEntry found for varName " + statement.getVarName()));
+                .findAny();
+
+        if (!hoOptional.isPresent()) {
+            //it might be a field reference, add it to envs
+            LOGGER.warning("no envEntry found for varName " + statement.getVarName() + ", may be a field reference");
+            HeapObject newHeapObject = new HeapObject(ProgramPoint.UNKNOWN, statement.getClassName());
+            hoOptional = Optional.of(newHeapObject);
+
+            List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
+            newEnv.add(new EnvEntry(statement.getVarName(), newHeapObject));
+
+            originalState = new State(
+                    originalState.getGraph(), originalState.getRoots(), originalState.getLocks(), newEnv, originalState.getWaits()
+            );
+        }
+
+        HeapObject heapObject = hoOptional.get();
 
         List<HeapObject> originalLocks = originalState.getLocks();
         State mergedState;

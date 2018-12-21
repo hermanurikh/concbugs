@@ -213,10 +213,14 @@ public class StatementParser {
     }
 
     void parseSynchronizedStatement(PsiSynchronizedStatement psiSynchronizedStatement, List<Statement> statements) {
+        PsiExpression lockExpression = psiSynchronizedStatement.getLockExpression();
+        String className = lockExpression.getType().getCanonicalText();
+
         statements.add(new SynchronizedStatement(
                 psiSynchronizedStatement.getTextOffset(),
-                psiSynchronizedStatement.getLockExpression().getText(),
-                this.parseStatements(psiSynchronizedStatement.getBody())));
+                lockExpression.getText(),
+                this.parseStatements(psiSynchronizedStatement.getBody()),
+                className));
     }
 
     void parseLoopStatement(PsiLoopStatement psiLoopStatement, List<Statement> statements) {
@@ -247,6 +251,10 @@ public class StatementParser {
                     ? className + ".class"
                     : "this";
 
+            String synchronizationClassName = isStatic(method)
+                    ? "java.lang.Class"
+                    : className;
+
             //add this as a first argument for synchronization if it is instance method
             List<Variable> variables = new ArrayList<>();
             if (!isStatic(method)) {
@@ -264,7 +272,7 @@ public class StatementParser {
 
             int textOffset = method.getTextOffset();
 
-            methodBody = desugarSynchronizedIfNeeded(textOffset, method, synchronizationVarName, methodBody);
+            methodBody = desugarSynchronizedIfNeeded(textOffset, method, synchronizationVarName, methodBody, synchronizationClassName);
 
             methodDeclarations.add(
                     new MethodDeclaration(methodName, variables, methodBody, textOffset)
@@ -310,10 +318,11 @@ public class StatementParser {
     private Statement desugarSynchronizedIfNeeded(int textOffset,
                                                   PsiMethod method,
                                                   String synchronizationVarName,
-                                                  Statement methodBody) {
+                                                  Statement methodBody,
+                                                  String synchronizationClass) {
         if (method.getModifierList().hasModifierProperty("synchronized")) {
             methodBody = new SynchronizedStatement(
-                    textOffset, synchronizationVarName, methodBody);
+                    textOffset, synchronizationVarName, methodBody, synchronizationClass);
         }
         return methodBody;
     }

@@ -193,7 +193,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Synchronized_1.java");
             assertInstanceOf(readStatement, SynchronizedStatement.class);
             SynchronizedStatement result = (SynchronizedStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(77);
+            assertThat(result.getLineNumber()).isEqualTo(101);
             assertThat(result.getVarName()).isEqualTo("a");
             assertInstanceOf(result.getInnerStatement(), CrossAssignmentStatement.class);
             CrossAssignmentStatement stmt1 = (CrossAssignmentStatement) result.getInnerStatement();
@@ -522,6 +522,6 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
         );
         getDateMethodDeclaration = new MethodDeclaration("getDate", variables,
                 new SynchronizedStatement(1902, "this",
-                        new CrossAssignmentStatement(1922, "a", "b")), 1902);
+                        new CrossAssignmentStatement(1922, "a", "b"), "Complex"), 1902);
     }
 }

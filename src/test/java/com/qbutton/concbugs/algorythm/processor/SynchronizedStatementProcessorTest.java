@@ -10,12 +10,12 @@ import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
-import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import com.qbutton.concbugs.algorythm.service.VisitorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -28,7 +28,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +54,8 @@ class SynchronizedStatementProcessorTest {
         int lineNumber = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body);
+        String className = "java.lang.String";
+        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -99,7 +100,8 @@ class SynchronizedStatementProcessorTest {
         int lineNumber = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body);
+        String className = "java.lang.String";
+        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -154,7 +156,8 @@ class SynchronizedStatementProcessorTest {
         int lineNumber = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body);
+        String className = "java.lang.String";
+        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -209,7 +212,8 @@ class SynchronizedStatementProcessorTest {
         int lineNumber = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body);
+        String className = "java.lang.String";
+        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -259,13 +263,14 @@ class SynchronizedStatementProcessorTest {
     }
 
     @Test
-    @DisplayName("fails when object with given variable name is not found in env")
-    void process_failure_objectNotInEnv() {
+    @DisplayName("works correctly when object with given variable name is not found in env")
+    void process_success_objectNotInEnv() {
         //given
         int lineNumber = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body);
+        String className = "java.lang.String";
+        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
         State emptyState = new State(
                 new Graph(emptyMap()),
                 emptySet(),
@@ -273,10 +278,17 @@ class SynchronizedStatementProcessorTest {
                 emptyList(),
                 emptySet()
         );
+        ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+        when(visitorService.visitStatement(any(), stateArgumentCaptor.capture())).thenReturn(emptyState);
 
         //when
+        State processResult = synchronizedStatementProcessor.process(statement, emptyState);
         //then
-        assertThrows(AlgorithmValidationException.class, () ->
-                synchronizedStatementProcessor.process(statement, emptyState));
+        State capturedState = stateArgumentCaptor.getValue();
+        assertThat(processResult, is(emptyState));
+        assertThat(capturedState.getEnvironment().size(), is(1));
+        assertThat(capturedState.getEnvironment().get(0).getHeapObject().getClazz(), is(className));
+        assertThat(capturedState.getEnvironment().get(0).getHeapObject().getProgramPoint(), is(ProgramPoint.UNKNOWN));
+        assertThat(capturedState.getEnvironment().get(0).getVarName(), is("this"));
     }
 }

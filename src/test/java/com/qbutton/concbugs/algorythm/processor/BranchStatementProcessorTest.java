@@ -39,7 +39,7 @@ class BranchStatementProcessorTest {
     }
 
     @Test
-    @DisplayName("processes correctly")
+    @DisplayName("processes correctly when statements are not null")
     void process() {
         //given
         int lineNumber = 32;
@@ -78,6 +78,79 @@ class BranchStatementProcessorTest {
         verifyNoMoreInteractions(visitorService);
 
         verify(mergeService).mergeStates(state2, state3, 34);
+        verifyNoMoreInteractions(mergeService);
+    }
+
+    @Test
+    @DisplayName("processes correctly when first statement is null")
+    void process_firstStatementIsNull() {
+        //given
+        int lineNumber = 32;
+        Statement statement2 = new WaitStatement(lineNumber, "2");
+
+        State initialState = Mockito.mock(State.class);
+        State state3 = Mockito.mock(State.class);
+        State resultState = Mockito.mock(State.class);
+
+        when(visitorService.visitStatement(statement2, initialState)).thenReturn(state3);
+        when(mergeService.mergeStates(State.EMPTY_STATE, state3, 34)).thenReturn(resultState);
+
+        //when
+        State actual = branchStatementProcessor.process(
+                new BranchStatement(34, "", null, statement2), initialState);
+
+        //then
+        assertThat(actual, is(resultState));
+
+        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "2")), eq(initialState));
+        verifyNoMoreInteractions(visitorService);
+
+        verify(mergeService).mergeStates(State.EMPTY_STATE, state3, 34);
+        verifyNoMoreInteractions(mergeService);
+    }
+
+    @Test
+    @DisplayName("processes correctly when second statement is null")
+    void process_secondStatementIsNull() {
+        //given
+        int lineNumber = 32;
+        Statement statement2 = new WaitStatement(lineNumber, "2");
+
+        State initialState = Mockito.mock(State.class);
+        State state3 = Mockito.mock(State.class);
+        State resultState = Mockito.mock(State.class);
+
+        when(visitorService.visitStatement(statement2, initialState)).thenReturn(state3);
+        when(mergeService.mergeStates(state3, State.EMPTY_STATE, 66)).thenReturn(resultState);
+
+        //when
+        State actual = branchStatementProcessor.process(
+                new BranchStatement(66, "", statement2, null), initialState);
+
+        //then
+        assertThat(actual, is(resultState));
+
+        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "2")), eq(initialState));
+        verifyNoMoreInteractions(visitorService);
+
+        verify(mergeService).mergeStates(state3, State.EMPTY_STATE, 66);
+        verifyNoMoreInteractions(mergeService);
+    }
+
+    @Test
+    @DisplayName("processes correctly when both statements are null")
+    void process_bothStatementsAreNull() {
+        //given
+        State initialState = Mockito.mock(State.class);
+
+        //when
+        State actual = branchStatementProcessor.process(
+                new BranchStatement(66, "", null, null), initialState);
+
+        //then
+        assertThat(actual, is(initialState));
+
+        verifyNoMoreInteractions(visitorService);
         verifyNoMoreInteractions(mergeService);
     }
 }

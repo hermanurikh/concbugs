@@ -1,5 +1,6 @@
 package com.qbutton.concbugs.algorythm.dto.statement;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -9,11 +10,14 @@ import lombok.ToString;
  */
 @Getter
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public final class SynchronizedStatement extends Statement {
     private final Statement innerStatement;
+    private final String className;
 
-    public SynchronizedStatement(int lineNumber, String varName, Statement innerStatement) {
+    public SynchronizedStatement(int lineNumber, String varName, Statement innerStatement, String className) {
         super(lineNumber, varName);
         this.innerStatement = innerStatement;
+        this.className = className;
     }
 }

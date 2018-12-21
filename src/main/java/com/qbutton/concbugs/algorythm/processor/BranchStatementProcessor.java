@@ -14,7 +14,7 @@ public final class BranchStatementProcessor extends AbstractStatementProcessor<B
 
     @Override
     State process(BranchStatement statement, State originalState) {
-        //todo use fork-join?
+
         State firstBranchState =
                 statement.getStmt1() != null
                         ? visitorService.visitStatement(statement.getStmt1(), originalState)
@@ -23,6 +23,10 @@ public final class BranchStatementProcessor extends AbstractStatementProcessor<B
                 statement.getStmt2() != null
                         ? visitorService.visitStatement(statement.getStmt2(), originalState)
                         : State.EMPTY_STATE;
+
+        if (firstBranchState == State.EMPTY_STATE && secondBranchState == State.EMPTY_STATE) {
+            return originalState;
+        }
 
         return mergeService.mergeStates(firstBranchState, secondBranchState, statement.getLineNumber());
     }
