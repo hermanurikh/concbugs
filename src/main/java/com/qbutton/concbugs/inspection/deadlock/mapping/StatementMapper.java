@@ -7,6 +7,7 @@ import com.intellij.psi.PsiLoopStatement;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiSynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Setter
+@Getter
 public class StatementMapper {
 
     private static final Logger LOGGER = Logger.getLogger(StatementMapper.class.getName());

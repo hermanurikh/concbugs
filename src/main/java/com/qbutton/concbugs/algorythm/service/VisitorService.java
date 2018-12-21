@@ -6,16 +6,20 @@ import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.processor.ProcessorFacade;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 
 @RequiredArgsConstructor
+@Setter
+@Getter
 public class VisitorService {
 
-    private final ProcessorFacade processorFacade;
+    private ProcessorFacade processorFacade;
 
     public State visitStatement(Statement statement, State state) {
         return processorFacade.process(statement, state);

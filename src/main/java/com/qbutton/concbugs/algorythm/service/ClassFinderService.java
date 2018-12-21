@@ -7,6 +7,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ClassInheritorsSearch;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ClassUtils;
 
@@ -16,9 +17,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-class ClassFinderService {
+@Setter
+public class ClassFinderService {
 
-    private final Project project;
+    private Project project;
 
     String findLowestSuperClass(String class1, String class2) {
 

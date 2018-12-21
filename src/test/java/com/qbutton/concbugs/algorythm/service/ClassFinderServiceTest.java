@@ -37,7 +37,8 @@ class ClassFinderServiceTest extends LightCodeInsightFixtureTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        classFinderService = new ClassFinderService(getProject());
+        classFinderService = new ClassFinderService();
+        classFinderService.setProject(getProject());
     }
 
     @AfterEach

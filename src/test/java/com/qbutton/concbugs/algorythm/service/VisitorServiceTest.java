@@ -37,7 +37,8 @@ class VisitorServiceTest {
 
     @BeforeEach
     void init() {
-        visitorService = new VisitorService(processorFacade);
+        visitorService = new VisitorService();
+        visitorService.setProcessorFacade(processorFacade);
     }
 
     @Test
