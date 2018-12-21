@@ -11,7 +11,7 @@ import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
 import java.util.ArrayList;
 import java.util.List;
 
-final class DeclarationStatementProcessor extends AbstractStatementProcessor<DeclarationStatement> {
+public final class DeclarationStatementProcessor extends AbstractStatementProcessor<DeclarationStatement> {
 
     @Override
     State process(DeclarationStatement statement, State originalState) {

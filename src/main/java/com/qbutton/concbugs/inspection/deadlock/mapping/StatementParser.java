@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "UC_USELESS_OBJECT"})
 @RequiredArgsConstructor
-class StatementParser {
+public class StatementParser {
 
     private final StatementShrinker statementShrinker;
     private final StatementMapper statementMapper;

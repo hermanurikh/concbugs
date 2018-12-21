@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
-final class MethodStatementProcessor extends AbstractStatementProcessor<MethodStatement> {
+public final class MethodStatementProcessor extends AbstractStatementProcessor<MethodStatement> {
 
     private final VisitorService visitorService;
     private final StateService stateService;

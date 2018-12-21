@@ -6,7 +6,7 @@ import com.qbutton.concbugs.algorythm.service.VisitorService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-final class SequentialStatementProcessor extends AbstractStatementProcessor<SequentialStatement> {
+public final class SequentialStatementProcessor extends AbstractStatementProcessor<SequentialStatement> {
 
     private final VisitorService visitorService;
 

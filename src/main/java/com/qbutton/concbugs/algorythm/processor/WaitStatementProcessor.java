@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatement> {
+public final class WaitStatementProcessor extends AbstractStatementProcessor<WaitStatement> {
 
     @Override
     State process(WaitStatement statement, State originalState) {

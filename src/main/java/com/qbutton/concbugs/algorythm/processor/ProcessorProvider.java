@@ -14,7 +14,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-final class ProcessorProvider {
+public final class ProcessorProvider {
 
     public ProcessorProvider(BranchStatementProcessor branchStatementProcessor,
                              CrossAssignmentStatementProcessor crossAssignmentStatementProcessor,

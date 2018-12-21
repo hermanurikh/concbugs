@@ -7,7 +7,7 @@ import com.qbutton.concbugs.algorythm.service.VisitorService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-final class BranchStatementProcessor extends AbstractStatementProcessor<BranchStatement> {
+public final class BranchStatementProcessor extends AbstractStatementProcessor<BranchStatement> {
 
     private final VisitorService visitorService;
     private final MergeService mergeService;

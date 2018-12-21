@@ -11,7 +11,7 @@ import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import java.util.ArrayList;
 import java.util.List;
 
-final class CrossAssignmentStatementProcessor extends AbstractStatementProcessor<CrossAssignmentStatement> {
+public final class CrossAssignmentStatementProcessor extends AbstractStatementProcessor<CrossAssignmentStatement> {
 
     @Override
     State process(CrossAssignmentStatement statement, State originalState) {

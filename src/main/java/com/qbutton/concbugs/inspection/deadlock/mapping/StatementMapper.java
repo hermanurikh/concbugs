@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Setter
-class StatementMapper {
+public class StatementMapper {
 
     private static final Logger LOGGER = Logger.getLogger(StatementMapper.class.getName());
 

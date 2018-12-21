@@ -11,7 +11,7 @@ import com.qbutton.concbugs.algorythm.dto.statement.InnerAssignmentStatement;
 import java.util.ArrayList;
 import java.util.List;
 
-final class InnerAssignmentStatementProcessor extends AbstractStatementProcessor<InnerAssignmentStatement> {
+public final class InnerAssignmentStatementProcessor extends AbstractStatementProcessor<InnerAssignmentStatement> {
 
     @Override
     State process(InnerAssignmentStatement statement, State originalState) {

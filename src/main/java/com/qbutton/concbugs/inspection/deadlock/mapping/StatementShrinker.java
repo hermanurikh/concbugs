@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class StatementShrinker {
+public class StatementShrinker {
 
     @Nullable
     Statement shrinkStatements(List<Statement> statements) {

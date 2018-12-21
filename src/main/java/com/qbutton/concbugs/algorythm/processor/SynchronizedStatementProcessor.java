@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
-final class SynchronizedStatementProcessor extends AbstractStatementProcessor<SynchronizedStatement> {
+public final class SynchronizedStatementProcessor extends AbstractStatementProcessor<SynchronizedStatement> {
 
     private final VisitorService visitorService;
 
