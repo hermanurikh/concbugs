@@ -8,8 +8,13 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
+import com.qbutton.concbugs.algorythm.service.GraphService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,15 +25,28 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("DeclarationStatementProcessor")
 class DeclarationStatementProcessorTest {
+
+    @Mock
+    private GraphService graphService;
+
+    private DeclarationStatementProcessor processor;
+
+    @BeforeEach
+    void setUp() {
+        processor = new DeclarationStatementProcessor(graphService);
+        doCallRealMethod().when(graphService).addOrReplaceEnv(any(), any());
+    }
 
     @Test
     @DisplayName("processes correctly when there is something in original state")
     void process_success() {
         //given
-        DeclarationStatementProcessor processor = new DeclarationStatementProcessor();
         String varName = "v1";
         DeclarationStatement statement = new DeclarationStatement(32, varName, "int");
 
@@ -64,7 +82,6 @@ class DeclarationStatementProcessorTest {
     @DisplayName("processes correctly when original state is empty")
     void process_emptyState_success() {
         //given
-        DeclarationStatementProcessor processor = new DeclarationStatementProcessor();
         String varName = "v1";
         DeclarationStatement statement = new DeclarationStatement(32, varName, "int");
 

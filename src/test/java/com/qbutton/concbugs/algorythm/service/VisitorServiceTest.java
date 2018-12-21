@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Objects;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -78,21 +80,22 @@ class VisitorServiceTest {
                 ImmutableList.of(
                         new MethodDeclaration.Variable("a", "int"),
                         new MethodDeclaration.Variable("b", "java.lang.String")),
-                methodBody);
+                methodBody,
+                34);
         when(processorFacade.process(any(), any())).thenAnswer(invocationOnMock -> {
             DeclarationStatement statement = (DeclarationStatement) invocationOnMock.getArguments()[0];
             if (statement.getVarName().equals("a")
-                    && statement.getClazz() == "int"
+                    && Objects.equals(statement.getClazz(), "int")
                     && invocationOnMock.getArguments()[1].equals(emptyState)) {
                 return state2;
             }
             if (statement.getVarName().equals("b")
-                    && statement.getClazz() == "java.lang.String"
+                    && Objects.equals(statement.getClazz(), "java.lang.String")
                     && invocationOnMock.getArguments()[1] == state2) {
                 return state3;
             }
             if (statement.getVarName().equals(varName)
-                    && statement.getClazz() == "java.lang.Double"
+                    && Objects.equals(statement.getClazz(), "java.lang.Double")
                     && invocationOnMock.getArguments()[1] == state3) {
                 return state4;
             }

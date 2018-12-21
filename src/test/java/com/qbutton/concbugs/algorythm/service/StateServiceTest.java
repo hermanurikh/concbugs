@@ -70,7 +70,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(ho1), ImmutableList.of(ho2));
 
             //then
             assertThat(state.getGraph().getNeighbors().size(), is(0));
@@ -103,7 +104,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(ho1), ImmutableList.of(ho2));
 
             //then
             assertThat(state.getGraph().getNeighbors().size(), is(1));
@@ -137,7 +139,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(), ImmutableList.of());
 
             //then
             HeapObject expected = new HeapObject(ProgramPoint.UNKNOWN, "int");
@@ -187,7 +190,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(ho4, ho1, ho2), ImmutableList.of(actualHo4, actualHo1, actualHo2));
 
             //then
             /*
@@ -240,7 +244,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(ho1), ImmutableList.of(actualHo1));
 
             //then
             assertThat(state.getWaits().size(), is(1));
@@ -269,7 +274,7 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState, emptyList(), emptyList());
 
             //then
             assertThat(state.getWaits().size(), is(1));
@@ -300,7 +305,8 @@ class StateServiceTest {
             State currentState = new State(callerGraph, callerRoots, callerLocks, callerEnv, callerWaits);
 
             //when
-            State state = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+            State state = stateService.renameFromCalleeToCallerContext(
+                    returnedMethodState, currentState, ImmutableList.of(ho2), ImmutableList.of(actualHo2));
 
             //then
             assertThat(state.getWaits().size(), is(2));
@@ -313,8 +319,7 @@ class StateServiceTest {
     @DisplayName("fails to merge when formal and actual parameters length differ")
     void renameFromCalleeToCallerContext_fail_parametersLenghDiffer() {
         //given
-        List<EnvEntry> calleeEnv = ImmutableList.of(
-                new EnvEntry("my var2", new HeapObject(ProgramPoint.UNKNOWN, "int")));
+        List<EnvEntry> calleeEnv = emptyList();
         State returnedMethodState = new State(
                 new Graph(emptyMap()), emptySet(), emptyList(), calleeEnv, emptySet());
 
@@ -325,6 +330,8 @@ class StateServiceTest {
         //when
         //then
         assertThrows(AlgorithmValidationException.class,
-                () -> stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState));
+                () -> stateService.renameFromCalleeToCallerContext(
+                        returnedMethodState, currentState,
+                        ImmutableList.of(new HeapObject(ProgramPoint.UNKNOWN, "int")), emptyList()));
     }
 }

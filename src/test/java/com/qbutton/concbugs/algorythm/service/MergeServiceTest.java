@@ -26,6 +26,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 @DisplayName("MergeService class")
@@ -36,10 +38,12 @@ class MergeServiceTest {
 
     @Mock
     private ClassFinderService classFinderService;
+    @Mock
+    private GraphService graphService;
 
     @BeforeEach
     void init() {
-        mergeService = new MergeService(classFinderService);
+        mergeService = new MergeService(classFinderService, graphService);
     }
 
     @Test
@@ -137,6 +141,7 @@ class MergeServiceTest {
             );
             when(classFinderService.findLowestSuperClass("int", "java.lang.Number"))
                     .thenReturn("java.lang.Number");
+            doCallRealMethod().when(graphService).addOrReplaceEnv(any(), any());
 
             //when
             List<EnvEntry> mergedEnv = mergeService.mergeEnvs(env1, env2, 14);

@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class MergeService {
 
     private final ClassFinderService classFinderService;
+    private final GraphService graphService;
 
     public Graph mergeGraphs(Graph g1, Graph g2) {
         Graph updatedGraph = g1.clone();
@@ -73,22 +73,24 @@ public class MergeService {
 
         List<EnvEntry> mergedEnv = new ArrayList<>(env1.size());
 
-        IntStream
-                .range(0, env1.size())
-                .forEach(idx -> {
-                    EnvEntry env1Entry = env1.get(idx);
-                    HeapObject ho1 = env1Entry.getHeapObject();
-                    EnvEntry env2Entry = env2.get(idx);
-                    HeapObject ho2 = env2Entry.getHeapObject();
+        int bound = env1.size();
+        for (int idx = 0; idx < bound; idx++) {
+            EnvEntry env1Entry = env1.get(idx);
+            HeapObject ho1 = env1Entry.getHeapObject();
+            EnvEntry env2Entry = env2.get(idx);
+            HeapObject ho2 = env2Entry.getHeapObject();
 
-                    if (ho1.equals(ho2)) {
-                        mergedEnv.add(env1Entry);
-                    } else {
-                        String lowestSuperClass = classFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
-                        ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
-                        mergedEnv.add(new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)));
-                    }
-                });
+            if (ho1.equals(ho2)) {
+                mergedEnv = graphService.addOrReplaceEnv(env1Entry, mergedEnv);
+            } else {
+                String lowestSuperClass = classFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
+                ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
+
+                mergedEnv = graphService.addOrReplaceEnv(
+                        new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)), mergedEnv
+                );
+            }
+        }
 
         return mergedEnv;
     }

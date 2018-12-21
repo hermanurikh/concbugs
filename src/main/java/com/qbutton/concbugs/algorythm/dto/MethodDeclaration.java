@@ -13,6 +13,7 @@ public class MethodDeclaration {
      */
     private final List<Variable> variables;
     private final Statement methodBody;
+    private final int lineNumber;
 
     @Data
     public static class Variable {

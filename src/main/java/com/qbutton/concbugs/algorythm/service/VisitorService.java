@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.logging.Logger;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -21,8 +23,14 @@ public class VisitorService {
 
     private ProcessorFacade processorFacade;
 
+    private static final Logger LOGGER = Logger.getLogger(VisitorService.class.getName());
+
     public State visitStatement(Statement statement, State state) {
-        return processorFacade.process(statement, state);
+        if (statement != null) {
+            LOGGER.info("Visiting statement " + statement);
+            return processorFacade.process(statement, state);
+        }
+        return state;
     }
 
     public State visitMethod(MethodDeclaration methodDeclaration) {
@@ -37,7 +45,7 @@ public class VisitorService {
         //process formals via "T v" rule
         for (MethodDeclaration.Variable var : methodDeclaration.getVariables()) {
             newState = visitStatement(new DeclarationStatement(
-                    methodDeclaration.getMethodBody().getLineNumber(),
+                    methodDeclaration.getLineNumber(),
                     var.getVariableName(),
                     var.getVariableClass()
             ), newState);

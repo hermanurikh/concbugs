@@ -13,13 +13,14 @@ import java.util.List;
 @Getter
 @ToString(callSuper = true)
 public final class MethodStatement extends Statement {
-    //todo where searching of all method declarations will be implemented?
     private final List<MethodDeclaration> methodDeclarations;
     private final String returnType;
+    private final List<String> actualParameters;
 
-    public MethodStatement(int lineNumber, String varName, List<MethodDeclaration> methodDeclarations, String returnType) {
+    public MethodStatement(int lineNumber, String varName, List<MethodDeclaration> methodDeclarations, String returnType, List<String> actualParameters) {
         super(lineNumber, varName);
         this.methodDeclarations = methodDeclarations;
         this.returnType = returnType;
+        this.actualParameters = actualParameters;
     }
 }

@@ -1,6 +1,7 @@
 package com.qbutton.concbugs.algorythm.service;
 
 import com.google.common.collect.Sets;
+import com.qbutton.concbugs.algorythm.dto.EnvEntry;
 import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
@@ -9,14 +10,15 @@ import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class GraphService {
@@ -119,6 +121,22 @@ public class GraphService {
         return new ReplaceNodeResult(updatedGraph, updatedRoots);
     }
 
+    public List<EnvEntry> addOrReplaceEnv(EnvEntry newEnvEntry, List<EnvEntry> oldEnv) {
+        List<EnvEntry> newEnv = new ArrayList<>(oldEnv);
+
+        OptionalInt varExists = IntStream.range(0, newEnv.size())
+                .filter(i -> newEnv.get(i).getVarName().equals(newEnvEntry.getVarName()))
+                .findAny();
+
+        if (varExists.isPresent()) {
+            newEnv.set(varExists.getAsInt(), newEnvEntry);
+        } else {
+            newEnv.add(newEnvEntry);
+        }
+
+        return newEnv;
+    }
+
     @SuppressWarnings("unchecked")
     public Graph postProcess(List<State> fixedMethodStates) {
         Graph result = new Graph(Collections.emptyMap());
@@ -150,19 +168,8 @@ public class GraphService {
     }
 
     @Data
-    public static class ReplaceNodeResult {
+    static class ReplaceNodeResult {
         private final Graph graph;
         private final Set<HeapObject> roots;
-    }
-
-    static {
-        //todo remove me when sure that works correctly
-        ClassLoader classLoader = GraphService.class.getClassLoader();
-        URL[] urls = ((URLClassLoader)classLoader).getURLs();
-
-        System.out.println("classpath:");
-        for(URL url: urls){
-            System.out.println(url.getFile());
-        }
     }
 }

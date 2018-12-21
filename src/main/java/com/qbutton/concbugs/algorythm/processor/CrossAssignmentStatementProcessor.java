@@ -7,11 +7,15 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import com.qbutton.concbugs.algorythm.service.GraphService;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public final class CrossAssignmentStatementProcessor extends AbstractStatementProcessor<CrossAssignmentStatement> {
+
+    private final GraphService graphService;
 
     @Override
     State process(CrossAssignmentStatement statement, State originalState) {
@@ -24,8 +28,9 @@ public final class CrossAssignmentStatementProcessor extends AbstractStatementPr
                 .map(EnvEntry::getHeapObject)
                 .orElseThrow(() -> new AlgorithmValidationException("no envEntry found for varName " + originalVar));
 
-        List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
-        newEnv.add(new EnvEntry(statement.getVarName(), existingHeapObject));
+        List<EnvEntry> newEnv = graphService.addOrReplaceEnv(
+                new EnvEntry(statement.getVarName(), existingHeapObject), originalState.getEnvironment()
+        );
 
         return new State(
                 originalState.getGraph().clone(),

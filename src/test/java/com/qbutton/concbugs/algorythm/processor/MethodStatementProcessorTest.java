@@ -11,6 +11,7 @@ import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import com.qbutton.concbugs.algorythm.service.GraphService;
 import com.qbutton.concbugs.algorythm.service.MergeService;
 import com.qbutton.concbugs.algorythm.service.StateService;
 import com.qbutton.concbugs.algorythm.service.VisitorService;
@@ -26,11 +27,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,12 +48,15 @@ class MethodStatementProcessorTest {
     private StateService stateService;
     @Mock
     private MergeService mergeService;
+    @Mock
+    private GraphService graphService;
 
     private MethodStatementProcessor methodStatementProcessor;
 
     @BeforeEach
     void init() {
-        methodStatementProcessor = new MethodStatementProcessor(visitorService, stateService, mergeService);
+        methodStatementProcessor = new MethodStatementProcessor(visitorService, stateService, mergeService, graphService);
+        doCallRealMethod().when(graphService).addOrReplaceEnv(any(), any());
     }
 
     @Test
@@ -58,7 +66,7 @@ class MethodStatementProcessorTest {
         State originalState = Mockito.mock(State.class);
         String varName = "myVar";
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, Collections.emptyList(), "int");
+                = new MethodStatement(32, varName, Collections.emptyList(), "int", ImmutableList.of("varName"));
         when(originalState.getEnvironment()).thenReturn(ImmutableList.of(
                 new EnvEntry(varName, new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object"))));
 
@@ -78,7 +86,7 @@ class MethodStatementProcessorTest {
         State originalState = Mockito.mock(State.class);
         String varName = "myVar";
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, Collections.emptyList(), "int");
+                = new MethodStatement(32, varName, Collections.emptyList(), "int", ImmutableList.of("someVar"));
         EnvEntry originalEnvEntry = new EnvEntry("someVar", new HeapObject(ProgramPoint.UNKNOWN, "java.lang.Object"));
         when(originalState.getEnvironment()).thenReturn(ImmutableList.of(originalEnvEntry));
 
@@ -102,7 +110,7 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int", emptyList());
         EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
         HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
@@ -137,7 +145,7 @@ class MethodStatementProcessorTest {
 
         Graph mergedGraph1 = new Graph(ImmutableMap.of(ho4, emptySet()));
         State currentState2 = new State(
-                mergedGraph1, newRoots1, originalState.getLocks(), newEnv,  newWaits1
+                mergedGraph1, newRoots1, originalState.getLocks(), newEnv, newWaits1
         );
 
         State renamedState2 = Mockito.mock(State.class);
@@ -150,7 +158,7 @@ class MethodStatementProcessorTest {
 
         Graph mergedGraph2 = new Graph(ImmutableMap.of(ho1, emptySet()));
         State currentStateFinal = new State(
-                mergedGraph2, newRoots2, originalState.getLocks(), newEnv,  newWaits2
+                mergedGraph2, newRoots2, originalState.getLocks(), newEnv, newWaits2
         );
 
 
@@ -173,7 +181,7 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int", emptyList());
         EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
         HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
@@ -214,7 +222,7 @@ class MethodStatementProcessorTest {
         ));
 
         State currentState2 = new State(
-                newGraph1, originalRoots, originalState.getLocks(), newEnv,  originalWaits
+                newGraph1, originalRoots, originalState.getLocks(), newEnv, originalWaits
         );
 
         State renamedState2 = Mockito.mock(State.class);
@@ -232,7 +240,7 @@ class MethodStatementProcessorTest {
         ));
 
         State currentStateFinal = new State(
-                newGraph2, originalRoots, originalState.getLocks(), newEnv,  originalWaits
+                newGraph2, originalRoots, originalState.getLocks(), newEnv, originalWaits
         );
 
 
@@ -258,7 +266,7 @@ class MethodStatementProcessorTest {
         State returnedMethodState1 = Mockito.mock(State.class);
         State returnedMethodState2 = Mockito.mock(State.class);
         MethodStatement methodStatement
-                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int");
+                = new MethodStatement(32, varName, ImmutableList.of(first, second), "int", emptyList());
         EnvEntry expectedEntry = new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"));
 
         HeapObject ho1 = new HeapObject(ProgramPoint.UNKNOWN, "java.lang.String");
@@ -296,7 +304,7 @@ class MethodStatementProcessorTest {
         ));
 
         State currentState2 = new State(
-                newGraph1, originalRoots, originalState.getLocks(), newEnv,  originalWaits
+                newGraph1, originalRoots, originalState.getLocks(), newEnv, originalWaits
         );
 
         State renamedState2 = Mockito.mock(State.class);
@@ -304,6 +312,210 @@ class MethodStatementProcessorTest {
         Graph mergedGraph2 = new Graph(ImmutableMap.of(ho1, emptySet()));
 
         mockCommonInvocations(first, second, returnedMethodState1, returnedMethodState2, currentState1, renamedState1, emptyGraph, mergedGraph1, currentState2, renamedState2, mergedGraph2);
+
+        //when
+        //then
+        assertThrows(AlgorithmValidationException.class, () -> methodStatementProcessor.process(methodStatement, originalState));
+    }
+
+    @Test
+    @DisplayName("processes successfully when actual parameters correspond to formal ones")
+    void process_success_actualParamsAreOk() {
+        //given
+        String firstVarName = "hey";
+        String secondVarName = "hoe";
+        HeapObject ho1 = new HeapObject(new ProgramPoint(firstVarName, 23), "firstClass");
+        HeapObject ho2 = new HeapObject(new ProgramPoint(secondVarName, 24), "secondClass");
+        List<EnvEntry> originalEnv = ImmutableList.of(
+                new EnvEntry(firstVarName, ho1),
+                new EnvEntry(secondVarName, ho2)
+        );
+        State originalState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                originalEnv,
+                emptySet()
+        );
+
+        String methodReturnVarName = "some return var";
+
+        List<EnvEntry> newEnv = ImmutableList.of(
+                new EnvEntry(firstVarName, ho1),
+                new EnvEntry(secondVarName, ho2),
+                new EnvEntry(methodReturnVarName, new HeapObject(new ProgramPoint(methodReturnVarName, 43), "int"))
+        );
+
+        State currentState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                newEnv,
+                emptySet()
+        );
+
+        MethodDeclaration methodDeclaration = new MethodDeclaration("some method",
+                ImmutableList.of(new MethodDeclaration.Variable("lil", "actualClass")),
+                null, 104);
+
+        MethodStatement methodStatement = new MethodStatement(
+                43, methodReturnVarName,
+                ImmutableList.of(methodDeclaration), "int", ImmutableList.of(secondVarName)
+        );
+
+        HeapObject expectedFormalHo = new HeapObject(new ProgramPoint("lil", 333), "actuallClassFromEnv");
+        List<EnvEntry> returnedEnv = ImmutableList.of(
+                new EnvEntry("lil", expectedFormalHo),
+                new EnvEntry("lil2", new HeapObject(ProgramPoint.UNKNOWN, "someOtherClass"))
+        );
+
+        State returnedMethodState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                returnedEnv,
+                emptySet()
+        );
+
+        List<HeapObject> expectedFormalParameters = ImmutableList.of(expectedFormalHo);
+        List<HeapObject> expectedActualParameters = ImmutableList.of(ho2);
+
+        when(visitorService.visitMethod(methodDeclaration)).thenReturn(returnedMethodState);
+        when(stateService.renameFromCalleeToCallerContext(
+                returnedMethodState, currentState, expectedFormalParameters, expectedActualParameters))
+                .thenReturn(State.EMPTY_STATE);
+        when(mergeService.mergeGraphs(any(), any())).thenReturn(new Graph(emptyMap()));
+
+        //when
+        methodStatementProcessor.process(methodStatement, originalState);
+
+        //then
+
+        verify(stateService).renameFromCalleeToCallerContext(
+                returnedMethodState, currentState, expectedFormalParameters, expectedActualParameters);
+    }
+
+    @Test
+    @DisplayName("processes successfully when actual parameters are empty")
+    void process_success_actualParamsAreEmpty() {
+        //given
+        List<EnvEntry> originalEnv = emptyList();
+        State originalState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                originalEnv,
+                emptySet()
+        );
+
+        String methodReturnVarName = "some return var";
+
+        List<EnvEntry> newEnv = ImmutableList.of(
+                new EnvEntry(methodReturnVarName, new HeapObject(new ProgramPoint(methodReturnVarName, 43), "int"))
+        );
+
+        State currentState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                newEnv,
+                emptySet()
+        );
+
+        MethodDeclaration methodDeclaration = new MethodDeclaration("some method",
+                ImmutableList.of(new MethodDeclaration.Variable("lil", "actualClass")),
+                null, 104);
+
+        MethodStatement methodStatement = new MethodStatement(
+                43, methodReturnVarName,
+                ImmutableList.of(methodDeclaration), "int", emptyList()
+        );
+
+        HeapObject expectedFormalHo = new HeapObject(new ProgramPoint("lil", 333), "actuallClassFromEnv");
+        List<EnvEntry> returnedEnv = ImmutableList.of(
+                new EnvEntry("lil", expectedFormalHo),
+                new EnvEntry("lil2", new HeapObject(ProgramPoint.UNKNOWN, "someOtherClass"))
+        );
+
+        State returnedMethodState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                returnedEnv,
+                emptySet()
+        );
+
+        List<HeapObject> expectedFormalParameters = ImmutableList.of(expectedFormalHo);
+        List<HeapObject> expectedActualParameters = ImmutableList.of(new HeapObject(ProgramPoint.UNKNOWN, "actuallClassFromEnv"));
+
+        when(visitorService.visitMethod(methodDeclaration)).thenReturn(returnedMethodState);
+        when(stateService.renameFromCalleeToCallerContext(
+                returnedMethodState, currentState, expectedFormalParameters, expectedActualParameters))
+                .thenReturn(State.EMPTY_STATE);
+        when(mergeService.mergeGraphs(any(), any())).thenReturn(new Graph(emptyMap()));
+
+        //when
+        methodStatementProcessor.process(methodStatement, originalState);
+
+        //then
+        verify(stateService).renameFromCalleeToCallerContext(
+                returnedMethodState, currentState, expectedFormalParameters, expectedActualParameters);
+    }
+
+    @Test
+    @DisplayName("throws exception when original env does not contain var of actual param")
+    void process_fail_originalEnvWithoutActualParam() {
+        //given
+        List<EnvEntry> originalEnv = emptyList();
+        State originalState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                originalEnv,
+                emptySet()
+        );
+
+        String methodReturnVarName = "some return var";
+
+        List<EnvEntry> newEnv = ImmutableList.of(
+                new EnvEntry(methodReturnVarName, new HeapObject(new ProgramPoint(methodReturnVarName, 43), "int"))
+        );
+
+        State currentState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                newEnv,
+                emptySet()
+        );
+
+        MethodDeclaration methodDeclaration = new MethodDeclaration("some method",
+                ImmutableList.of(new MethodDeclaration.Variable("lil", "actualClass")),
+                null, 104);
+
+        MethodStatement methodStatement = new MethodStatement(
+                43, methodReturnVarName,
+                ImmutableList.of(methodDeclaration), "int", ImmutableList.of("unknown")
+        );
+
+        HeapObject expectedFormalHo = new HeapObject(new ProgramPoint("lil", 333), "actuallClassFromEnv");
+        List<EnvEntry> returnedEnv = ImmutableList.of(
+                new EnvEntry("lil", expectedFormalHo),
+                new EnvEntry("lil2", new HeapObject(ProgramPoint.UNKNOWN, "someOtherClass"))
+        );
+
+        State returnedMethodState = new State(
+                new Graph(emptyMap()),
+                emptySet(),
+                emptyList(),
+                returnedEnv,
+                emptySet()
+        );
+
+        List<HeapObject> expectedFormalParameters = ImmutableList.of(expectedFormalHo);
+        List<HeapObject> expectedActualParameters = ImmutableList.of(new HeapObject(ProgramPoint.UNKNOWN, "actuallClassFromEnv"));
+
+        when(visitorService.visitMethod(methodDeclaration)).thenReturn(returnedMethodState);
 
         //when
         //then
@@ -329,7 +541,7 @@ class MethodStatementProcessorTest {
     }
 
     private void mockRenameFromCalleeToCallerContext(State returnedMethodState1, State returnedMethodState2, State currentState1, State renamedState1, State currentState2, State renamedState2) {
-        when(stateService.renameFromCalleeToCallerContext(any(State.class), any(State.class))).thenAnswer(invocationOnMock -> {
+        when(stateService.renameFromCalleeToCallerContext(any(State.class), any(State.class), any(), any())).thenAnswer(invocationOnMock -> {
             State returnedMethodState = (State) invocationOnMock.getArguments()[0];
             State currentState = (State) invocationOnMock.getArguments()[1];
             if (returnedMethodState == returnedMethodState1 && currentState.equals(currentState1)) return renamedState1;

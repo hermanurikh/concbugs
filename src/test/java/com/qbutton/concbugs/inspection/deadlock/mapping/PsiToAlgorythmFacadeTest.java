@@ -233,6 +233,9 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getReturnType()).isEqualTo("java.util.Date");
             assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
+            assertThat(result.getActualParameters().size()).isEqualTo(2);
+            assertThat(result.getActualParameters().get(0).equals("this"));
+            assertThat(result.getActualParameters().get(1).equals("a"));
             MethodDeclaration methodDeclaration = result.getMethodDeclarations().get(0);
             assertThat(methodDeclaration.getMethodName()).isEqualTo("getSomeDate");
             assertThat(methodDeclaration.getVariables().size()).isEqualTo(2);
@@ -256,6 +259,9 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getReturnType()).isEqualTo("java.util.Date");
             assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
+            assertThat(result.getActualParameters().size()).isEqualTo(2);
+            assertThat(result.getActualParameters().get(0).equals("this"));
+            assertThat(result.getActualParameters().get(1).equals("a"));
             MethodDeclaration methodDeclaration = result.getMethodDeclarations().get(0);
             assertThat(methodDeclaration.getMethodName()).isEqualTo("getSomeDate");
             assertThat(methodDeclaration.getVariables().size()).isEqualTo(2);
@@ -273,6 +279,9 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             MethodStatement result = (MethodStatement) readStatement;
             assertThat(result.getReturnType()).isEqualTo("void");
             assertThat(result.getMethodDeclarations().size()).isEqualTo(2);
+            assertThat(result.getActualParameters().size()).isEqualTo(2);
+            assertThat(result.getActualParameters().get(0).equals("this"));
+            assertThat(result.getActualParameters().get(1).equals("a"));
 
             MethodDeclaration first = result.getMethodDeclarations().get(0);
             assertThat(first.getMethodName()).isEqualTo("doSomething");
@@ -500,12 +509,11 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
     private void initTest2MethodDeclaration() {
         List<MethodDeclaration.Variable> variables = ImmutableList.of(
-                new MethodDeclaration.Variable("Complex.class", "Complex"),
                 new MethodDeclaration.Variable("a", "java.lang.String"),
                 new MethodDeclaration.Variable("b", "Date")
         );
         test2MethodDeclaration = new MethodDeclaration("test2", variables,
-                new CrossAssignmentStatement(1837, "c", "d"));
+                new CrossAssignmentStatement(1837, "c", "d"), 1803);
     }
 
     private void initGetDateMethodDeclaration() {
@@ -513,7 +521,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
                 new MethodDeclaration.Variable("this", "Complex")
         );
         getDateMethodDeclaration = new MethodDeclaration("getDate", variables,
-                new SynchronizedStatement(1751, "this",
-                        new CrossAssignmentStatement(1922, "a", "b")));
+                new SynchronizedStatement(1902, "this",
+                        new CrossAssignmentStatement(1922, "a", "b")), 1902);
     }
 }

@@ -9,16 +9,15 @@ import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import com.qbutton.concbugs.algorythm.service.GraphService;
 import com.qbutton.concbugs.algorythm.service.MergeService;
 import com.qbutton.concbugs.algorythm.service.StateService;
 import com.qbutton.concbugs.algorythm.service.VisitorService;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Set;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class MethodStatementProcessor extends AbstractStatementProcessor<MethodStatement> {
@@ -26,6 +25,7 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
     private final VisitorService visitorService;
     private final StateService stateService;
     private final MergeService mergeService;
+    private final GraphService graphService;
 
     @Override
     State process(MethodStatement statement, State originalState) {
@@ -36,7 +36,7 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
         );
 
         for (MethodDeclaration method : statement.getMethodDeclarations()) {
-            currentState = mergeMethod(originalState, newEnv, currentState, method);
+            currentState = mergeMethod(originalState, newEnv, currentState, method, statement.getActualParameters());
         }
 
         return currentState;
@@ -48,27 +48,29 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
             HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
             EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
 
-            List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
-
-            OptionalInt varExists = IntStream.range(0, newEnv.size())
-                    .filter(i -> newEnv.get(i).getVarName().equals(newProgramPoint.getVariableName()))
-                    .findAny();
-
-            if (varExists.isPresent()) {
-                newEnv.set(varExists.getAsInt(), newEnvEntry);
-            } else {
-                newEnv.add(newEnvEntry);
-            }
-
-            return newEnv;
+            return graphService.addOrReplaceEnv(newEnvEntry, originalState.getEnvironment());
         }
 
         return originalState.getEnvironment();
     }
 
-    private State mergeMethod(State originalState, List<EnvEntry> newEnv, State currentState, MethodDeclaration method) {
+    private State mergeMethod(State originalState,
+                              List<EnvEntry> newEnv,
+                              State currentState,
+                              MethodDeclaration method,
+                              List<String> actualStringParameters) {
         State returnedMethodState = visitorService.visitMethod(method);
-        State renamedState = stateService.renameFromCalleeToCallerContext(returnedMethodState, currentState);
+        //the fist envs in env will be formal parameters, including this
+        List<HeapObject> formalParameters = returnedMethodState.getEnvironment().stream()
+                .map(EnvEntry::getHeapObject)
+                .limit(method.getVariables().size())
+                .collect(Collectors.toList());
+
+        List<HeapObject> actualParameters = getActualParameters(originalState, actualStringParameters, formalParameters);
+
+        State renamedState = stateService.renameFromCalleeToCallerContext(
+                returnedMethodState, currentState, formalParameters, actualParameters
+        );
         Graph newGraph = mergeService.mergeGraphs(currentState.getGraph(), renamedState.getGraph());
 
         Set<HeapObject> newRoots = currentState.getRoots();
@@ -94,6 +96,30 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
         }
 
         return new State(newGraph, newRoots, originalState.getLocks(), newEnv, newWaits);
+    }
+
+    private List<HeapObject> getActualParameters(State originalState,
+                                                 List<String> actualStringParameters,
+                                                 List<HeapObject> formalParameters) {
+        return actualStringParameters.isEmpty()
+                ?
+                //top level method, replace with unknown heap objects
+                formalParameters.stream()
+                        .map(ho -> new HeapObject(ProgramPoint.UNKNOWN, ho.getClazz()))
+                        .collect(Collectors.toList())
+                :
+                actualStringParameters.stream()
+                        .map(varName -> findEntryInOriginalEnv(originalState, varName))
+                        .map(EnvEntry::getHeapObject)
+                        .collect(Collectors.toList());
+    }
+
+    private EnvEntry findEntryInOriginalEnv(State originalState, String varName) {
+        return originalState.getEnvironment()
+                .stream()
+                .filter(envEntry -> envEntry.getVarName().equals(varName))
+                .findAny()
+                .orElseThrow(() -> new AlgorithmValidationException("Original env does not contain variable with name " + varName));
     }
 
     private void checkGraphContainsLock(Graph newGraph, HeapObject lastLock) {

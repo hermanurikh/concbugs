@@ -6,6 +6,7 @@ import com.intellij.psi.PsiCodeBlock;
 import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiExpressionList;
 import com.intellij.psi.PsiExpressionStatement;
 import com.intellij.psi.PsiIfStatement;
 import com.intellij.psi.PsiLoopStatement;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -120,11 +122,13 @@ public class StatementParser {
                 return;
             }
 
-            statements.add(parseMethod(psiMethod, resultVarName, textOffset));
+            List<String> actualParameters = getActualParameters(expression, psiMethod);
+
+            statements.add(parseMethod(psiMethod, resultVarName, textOffset, actualParameters));
         }
     }
 
-    private MethodStatement parseMethod(PsiMethod psiMethod, String resultVarName, Integer initialTextOffset) {
+    private MethodStatement parseMethod(PsiMethod psiMethod, String resultVarName, Integer initialTextOffset, List<String> actualParameters) {
         List<MethodDeclaration> methodDeclarations = new ArrayList<>();
         List<PsiMethod> methodsToParse = new ArrayList<>();
 
@@ -135,15 +139,20 @@ public class StatementParser {
         methodsToParse.add(psiMethod);
         methodsToParse.addAll(OverridingMethodsSearch.search(psiMethod).findAll());
 
-        methodsToParse.forEach(addMethodDeclarationIfNeeded(psiMethod.getName(), textOffset, methodDeclarations));
+        methodsToParse.forEach(addMethodDeclarationIfNeeded(psiMethod.getName(), methodDeclarations));
 
         String returnType = psiMethod.getReturnType().getCanonicalText();
 
-        return new MethodStatement(textOffset, resultVarName, methodDeclarations, returnType);
+        return new MethodStatement(textOffset, resultVarName, methodDeclarations, returnType, actualParameters);
     }
 
+    /**
+     * Top-level method parsing.
+     * @param psiMethod psiMethod
+     * @return resulting method statement
+     */
     MethodStatement parseMethod(PsiMethod psiMethod) {
-        return parseMethod(psiMethod, null, null);
+        return parseMethod(psiMethod, null, null, Collections.emptyList());
     }
 
     void parseDeclarationStatement(PsiDeclarationStatement psiDeclarationStatement, List<Statement> statements) {
@@ -226,7 +235,6 @@ public class StatementParser {
     }
 
     private Consumer<PsiMethod> addMethodDeclarationIfNeeded(String methodName,
-                                                             int textOffset,
                                                              List<MethodDeclaration> methodDeclarations) {
         return method -> {
             if (isLibraryMethod(method)) {
@@ -235,13 +243,15 @@ public class StatementParser {
 
             String className = method.getContainingClass().getQualifiedName();
 
-            String synchronizationVarName = method.getModifierList().hasModifierProperty("static")
+            String synchronizationVarName = isStatic(method)
                     ? className + ".class"
                     : "this";
 
-            //add this or class variable as a first argument for synchronization
+            //add this as a first argument for synchronization if it is instance method
             List<Variable> variables = new ArrayList<>();
-            variables.add(new Variable(synchronizationVarName, className));
+            if (!isStatic(method)) {
+                variables.add(new Variable(synchronizationVarName, className));
+            }
 
             variables.addAll(
                     Arrays.stream(method.getParameterList().getParameters())
@@ -252,12 +262,49 @@ public class StatementParser {
             PsiCodeBlock actualBody = method.getBody();
             Statement methodBody = this.parseStatements(actualBody);
 
+            int textOffset = method.getTextOffset();
+
             methodBody = desugarSynchronizedIfNeeded(textOffset, method, synchronizationVarName, methodBody);
 
             methodDeclarations.add(
-                    new MethodDeclaration(methodName, variables, methodBody)
+                    new MethodDeclaration(methodName, variables, methodBody, textOffset)
             );
         };
+    }
+
+    private boolean isStatic(PsiMethod method) {
+        return method.getModifierList().hasModifierProperty("static");
+    }
+
+    private List<String> getActualParameters(PsiMethodCallExpression expression, PsiMethod psiMethod) {
+    /*when m.getSomeDate(a)
+    expression.getFirstChild() - PsiReferenceExpression m.getSomedate with first child PsiReferenceExpression m (expr.fc.fc.getText())
+    expression.getLastChild() - PsiExpressionListImpl .getExpressions() [0] - PsiReferenceExpression a (((PsiExpressionListImpl) expression.getLastChild()).getExpressions()[0].getText())
+
+    when getSomeDate(a) - same with lastchild, but firstChild - psiReferenceExpression getSomeDate with first child PsiReferenceParameterList
+     */
+        if (!(expression.getLastChild() instanceof PsiExpressionList)) {
+            throw new RuntimeException("methodCallExpression is expected to have last child of PsiExpressionList");
+        }
+
+        List<String> actualParameters = new ArrayList<>();
+
+        if (!isStatic(psiMethod)) {
+            if (expression.getFirstChild().getFirstChild() instanceof PsiReferenceExpression) {
+                //a method is called on some object, add it as first param
+                actualParameters.add(expression.getFirstChild().getFirstChild().getText());
+            } else {
+                //a method is called on this
+                actualParameters.add("this");
+            }
+        }
+
+        actualParameters.addAll(
+                Arrays.stream(((PsiExpressionList) expression.getLastChild()).getExpressions())
+                        .map(PsiElement::getText)
+                        .collect(Collectors.toList())
+        );
+        return actualParameters;
     }
 
     private Statement desugarSynchronizedIfNeeded(int textOffset,

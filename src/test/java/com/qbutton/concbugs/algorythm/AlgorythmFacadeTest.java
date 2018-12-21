@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,8 +44,8 @@ class AlgorythmFacadeTest {
     @Test
     void visitLibrary() {
         //given
-        MethodStatement method1 = new MethodStatement(0, "0", Collections.emptyList(), "int");
-        MethodStatement method2 = new MethodStatement(1, "1", Collections.emptyList(), "java.lang.String");
+        MethodStatement method1 = new MethodStatement(0, "0", emptyList(), "int", emptyList());
+        MethodStatement method2 = new MethodStatement(1, "1", emptyList(), "java.lang.String", emptyList());
 
         State methodProcessResult1 = Mockito.mock(State.class);
         State methodProcessResult2 = Mockito.mock(State.class);

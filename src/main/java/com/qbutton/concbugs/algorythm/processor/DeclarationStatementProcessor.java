@@ -7,11 +7,15 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.DeclarationStatement;
+import com.qbutton.concbugs.algorythm.service.GraphService;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public final class DeclarationStatementProcessor extends AbstractStatementProcessor<DeclarationStatement> {
+
+    private final GraphService graphService;
 
     @Override
     State process(DeclarationStatement statement, State originalState) {
@@ -23,8 +27,7 @@ public final class DeclarationStatementProcessor extends AbstractStatementProces
                         statement.getClazz()
                 ));
 
-        List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());
-        newEnv.add(newEnvEntry);
+        List<EnvEntry> newEnv = graphService.addOrReplaceEnv(newEnvEntry, originalState.getEnvironment());
 
         return new State(
                 originalState.getGraph().clone(),

@@ -9,8 +9,13 @@ import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.dto.statement.CrossAssignmentStatement;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import com.qbutton.concbugs.algorythm.service.GraphService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Set;
@@ -20,15 +25,27 @@ import static java.util.Collections.emptySet;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("CrossAssignmentStatementProcessor")
 class CrossAssignmentStatementProcessorTest {
+
+    @Mock
+    private GraphService graphService;
+
+    private CrossAssignmentStatementProcessor processor;
+
+    @BeforeEach
+    void setUp() {
+        processor = new CrossAssignmentStatementProcessor(graphService);
+    }
 
     @Test
     @DisplayName("processes correctly when there is correct data in original state")
     void process_success() {
         //given
-        CrossAssignmentStatementProcessor processor = new CrossAssignmentStatementProcessor();
         String varName = "v1";
         String rightVarName = "v2";
         CrossAssignmentStatement statement = new CrossAssignmentStatement(32, varName, rightVarName);
@@ -45,6 +62,7 @@ class CrossAssignmentStatementProcessorTest {
                 ImmutableList.of(ho1EnvEntry),
                 ho1Set
         );
+        doCallRealMethod().when(graphService).addOrReplaceEnv(any(), any());
 
         //when
         State newState = processor.process(statement, originalState);
@@ -64,7 +82,6 @@ class CrossAssignmentStatementProcessorTest {
     @DisplayName("fails with exception when there is no env entry for given rightVarName in original state")
     void process_failure_stateIsIncorrect() {
         //given
-        CrossAssignmentStatementProcessor processor = new CrossAssignmentStatementProcessor();
         String varName = "v1";
         String rightVarName = "v2";
         CrossAssignmentStatement statement = new CrossAssignmentStatement(32, varName, rightVarName);

@@ -1,6 +1,5 @@
 package com.qbutton.concbugs.algorythm.service;
 
-import com.qbutton.concbugs.algorythm.dto.EnvEntry;
 import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
@@ -13,17 +12,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
-
 @RequiredArgsConstructor
 public class StateService {
 
     private final GraphService graphService;
 
-    public State renameFromCalleeToCallerContext(State returnedMethodState, State currentState) {
-
-        List<HeapObject> formalParameters = getMethodParameters(returnedMethodState);
-        List<HeapObject> actualParameters = getMethodParameters(currentState);
+    public State renameFromCalleeToCallerContext(State returnedMethodState,
+                                                 State currentState,
+                                                 List<HeapObject> formalParameters,
+                                                 List<HeapObject> actualParameters) {
 
         validateMethodParams(formalParameters, actualParameters);
 
@@ -42,9 +39,9 @@ public class StateService {
     }
 
     private ReplaceNodeResult mergeGraphsAndRoots(State returnedMethodState,
-                                                         State currentState,
-                                                         List<HeapObject> formalParameters,
-                                                         List<HeapObject> actualParameters) {
+                                                  State currentState,
+                                                  List<HeapObject> formalParameters,
+                                                  List<HeapObject> actualParameters) {
         ReplaceNodeResult replaceNodeResult =
                 new ReplaceNodeResult(returnedMethodState.getGraph(), returnedMethodState.getRoots());
 
@@ -77,8 +74,8 @@ public class StateService {
     }
 
     private Set<HeapObject> mergeWaits(State returnedMethodState,
-                                              List<HeapObject> formalParameters,
-                                              List<HeapObject> actualParameters) {
+                                       List<HeapObject> formalParameters,
+                                       List<HeapObject> actualParameters) {
         Set<HeapObject> newWaitSet = new HashSet<>();
         returnedMethodState.getWaits().forEach(wait -> {
             int index = formalParameters.indexOf(wait);
@@ -90,13 +87,6 @@ public class StateService {
             }
         });
         return newWaitSet;
-    }
-
-    private List<HeapObject> getMethodParameters(State returnedMethodState) {
-        return returnedMethodState.getEnvironment()
-                .stream()
-                .map(EnvEntry::getHeapObject)
-                .collect(toList());
     }
 
     private void validateMethodParams(List<HeapObject> formalParameters, List<HeapObject> actualParameters) {
