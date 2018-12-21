@@ -34,13 +34,13 @@ import static org.mockito.Mockito.when;
 class GraphServiceTest {
 
     @Mock
-    private ReflectionService reflectionService;
+    private ClassFinderService classFinderService;
 
     private GraphService graphService;
 
     @BeforeEach
     void init() {
-        graphService = new GraphService(reflectionService);
+        graphService = new GraphService(classFinderService);
     }
 
     @Nested
@@ -431,7 +431,7 @@ class GraphServiceTest {
             HeapObject ho5 = new HeapObject(new ProgramPoint("v5", 36), "java.lang.Double");
             HeapObject ho6 = new HeapObject(new ProgramPoint("v6", 37), "java.lang.Long");
 
-            when(reflectionService.getSubclassesOf(any())).thenAnswer(invocation -> {
+            when(classFinderService.getSubclassesOf(any())).thenAnswer(invocation -> {
                 String clazz = (String) invocation.getArguments()[0];
 
                 if (clazz.equals("com.qbutton.concbugs.algorythm.dto.statement.Statement")) {

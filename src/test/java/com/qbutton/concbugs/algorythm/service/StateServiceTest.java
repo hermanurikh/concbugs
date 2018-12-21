@@ -9,9 +9,13 @@ import com.qbutton.concbugs.algorythm.dto.HeapObject;
 import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -25,10 +29,19 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("stateService class")
 class StateServiceTest {
 
-    private final StateService stateService = new StateService(new GraphService(new ReflectionService()));
+    @Mock
+    private ClassFinderService classFinderService;
+
+    private StateService stateService;
+
+    @BeforeEach
+    void init() {
+        stateService = new StateService(new GraphService(classFinderService));
+    }
 
     @Nested
     @DisplayName("merges graphs and roots when merging states")

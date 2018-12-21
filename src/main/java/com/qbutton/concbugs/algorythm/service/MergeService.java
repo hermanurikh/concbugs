@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class MergeService {
 
-    private final SuperClassFinderService superClassFinderService;
+    private final ClassFinderService classFinderService;
 
     public Graph mergeGraphs(Graph g1, Graph g2) {
         Graph updatedGraph = g1.clone();
@@ -84,7 +84,7 @@ public class MergeService {
                     if (ho1.equals(ho2)) {
                         mergedEnv.add(env1Entry);
                     } else {
-                        String lowestSuperClass = superClassFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
+                        String lowestSuperClass = classFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
                         ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
                         mergedEnv.add(new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)));
                     }

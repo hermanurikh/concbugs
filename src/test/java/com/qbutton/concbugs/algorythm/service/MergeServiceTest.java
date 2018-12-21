@@ -35,11 +35,11 @@ class MergeServiceTest {
     private MergeService mergeService;
 
     @Mock
-    private SuperClassFinderService superClassFinderService;
+    private ClassFinderService classFinderService;
 
     @BeforeEach
     void init() {
-        mergeService = new MergeService(superClassFinderService);
+        mergeService = new MergeService(classFinderService);
     }
 
     @Test
@@ -135,7 +135,7 @@ class MergeServiceTest {
                     new EnvEntry(varName1, ho3),
                     new EnvEntry(varName2, ho2)
             );
-            when(superClassFinderService.findLowestSuperClass("int", "java.lang.Number"))
+            when(classFinderService.findLowestSuperClass("int", "java.lang.Number"))
                     .thenReturn("java.lang.Number");
 
             //when

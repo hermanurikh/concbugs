@@ -21,7 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class GraphService {
 
-    private final ReflectionService reflectionService;
+    private final ClassFinderService classFinderService;
 
     Graph removeObject(Graph graph, HeapObject heapObject) {
 
@@ -129,10 +129,10 @@ public class GraphService {
             for (Map.Entry<HeapObject, Set<HeapObject>> entry : fixedMethodState.getGraph().getNeighbors().entrySet()) {
                 HeapObject from = entry.getKey();
                 Set<HeapObject> edges = entry.getValue();
-                Set<String> subclassesOfFrom = reflectionService.getSubclassesOf(from.getClazz());
+                Set<String> subclassesOfFrom = classFinderService.getSubclassesOf(from.getClazz());
                 Set<String> subclassesOfTo = new HashSet<>();
                 for (HeapObject to : edges) {
-                    subclassesOfTo.addAll(reflectionService.getSubclassesOf(to.getClazz()));
+                    subclassesOfTo.addAll(classFinderService.getSubclassesOf(to.getClazz()));
                 }
 
                 for (String subclassOfFrom : subclassesOfFrom) {

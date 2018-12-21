@@ -5,14 +5,18 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.searches.ClassInheritorsSearch;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ClassUtils;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-class SuperClassFinderService {
+class ClassFinderService {
 
     private final Project project;
 
@@ -23,7 +27,7 @@ class SuperClassFinderService {
 
         AtomicReference<String> commonSuperClass = new AtomicReference<>();
 
-        ApplicationManagerEx.getApplicationEx().runReadAction(() -> {
+        runInReadAction(() -> {
             checkAndUpgradeToWrapper(class1, realClass1);
             checkAndUpgradeToWrapper(class2, realClass2);
 
@@ -35,6 +39,25 @@ class SuperClassFinderService {
         });
 
         return commonSuperClass.get();
+    }
+
+    Set<String> getSubclassesOf(String superClass) {
+        Set<String> inheritors = new HashSet<>();
+
+        runInReadAction(() -> {
+            PsiClass psiClass = getClassFromString(new AtomicReference<>(superClass));
+
+            inheritors.add(psiClass.getQualifiedName());
+            inheritors.addAll(
+                    ClassInheritorsSearch.search(psiClass).findAll()
+                            .stream()
+                            .map(PsiClass::getQualifiedName)
+                            .collect(Collectors.toSet())
+            );
+        });
+
+
+        return inheritors;
     }
 
     private PsiClass getClassFromString(AtomicReference<String> stringClass) {
@@ -72,5 +95,9 @@ class SuperClassFinderService {
         }
 
         return class1;
+    }
+
+    private void runInReadAction(Runnable runnable) {
+        ApplicationManagerEx.getApplicationEx().runReadAction(runnable);
     }
 }
