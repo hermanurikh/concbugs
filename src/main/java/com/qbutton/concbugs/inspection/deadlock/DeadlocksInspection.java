@@ -79,8 +79,6 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
 
                 Graph graph = algorythmFacade.visitLibrary(methodStatements);
 
-                System.out.println(graph);
-
                 methodStatements.clear();
             }
         };

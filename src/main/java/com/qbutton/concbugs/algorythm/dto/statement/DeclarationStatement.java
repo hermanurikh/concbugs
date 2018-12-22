@@ -14,8 +14,8 @@ import lombok.ToString;
 public final class DeclarationStatement extends Statement {
     private final String clazz;
 
-    public DeclarationStatement(int lineNumber, String varName, String clazz) {
-        super(lineNumber, varName);
+    public DeclarationStatement(int offset, String varName, String clazz) {
+        super(offset, varName);
         this.clazz = clazz;
     }
 }

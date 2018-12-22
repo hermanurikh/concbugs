@@ -23,7 +23,7 @@ public final class InnerAssignmentStatementProcessor extends AbstractStatementPr
         EnvEntry newEnvEntry = new EnvEntry(
                 statement.getVarName(),
                 new HeapObject(
-                        new ProgramPoint(statement.getVarName(), statement.getLineNumber()),
+                        new ProgramPoint(statement.getVarName(), statement.getOffset()),
                         statement.getClazz()
                 ));
 

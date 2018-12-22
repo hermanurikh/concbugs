@@ -35,9 +35,9 @@ class StatementShrinkerTest {
         SequentialStatement sequentialStatement2 = (SequentialStatement) sequentialStatement1.getStmt1();
         assertThat(sequentialStatement2.getStmt1() instanceof WaitStatement);
         assertThat(sequentialStatement2.getStmt2() instanceof WaitStatement);
-        assertThat(sequentialStatement2.getStmt1().getLineNumber()).isEqualTo(2);
-        assertThat(sequentialStatement2.getStmt2().getLineNumber()).isEqualTo(3);
-        assertThat(sequentialStatement1.getStmt2().getLineNumber()).isEqualTo(4);
+        assertThat(sequentialStatement2.getStmt1().getOffset()).isEqualTo(2);
+        assertThat(sequentialStatement2.getStmt2().getOffset()).isEqualTo(3);
+        assertThat(sequentialStatement1.getStmt2().getOffset()).isEqualTo(4);
     }
 
     @Test
@@ -49,7 +49,7 @@ class StatementShrinkerTest {
 
         assertThat(statement instanceof WaitStatement);
         WaitStatement waitStatement = (WaitStatement) statement;
-        assertThat(waitStatement.getLineNumber()).isEqualTo(2);
+        assertThat(waitStatement.getOffset()).isEqualTo(2);
         assertThat(waitStatement.getVarName()).isEqualTo("1");
     }
 
@@ -65,9 +65,9 @@ class StatementShrinkerTest {
         SequentialStatement sequentialStatement = (SequentialStatement) statement;
         assertThat(sequentialStatement.getStmt1() instanceof WaitStatement);
         assertThat(sequentialStatement.getStmt2() instanceof WaitStatement);
-        assertThat(sequentialStatement.getStmt1().getLineNumber()).isEqualTo(2);
+        assertThat(sequentialStatement.getStmt1().getOffset()).isEqualTo(2);
         assertThat(sequentialStatement.getStmt1().getVarName()).isEqualTo("1");
-        assertThat(sequentialStatement.getStmt2().getLineNumber()).isEqualTo(3);
+        assertThat(sequentialStatement.getStmt2().getOffset()).isEqualTo(3);
         assertThat(sequentialStatement.getStmt2().getVarName()).isEqualTo("2");
     }
 
@@ -91,18 +91,18 @@ class StatementShrinkerTest {
         assertThat(sequentialStatement2.getStmt1() instanceof SequentialStatement);
         assertThat(sequentialStatement2.getStmt2() instanceof SequentialStatement);
         assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt1() instanceof WaitStatement);
-        assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt1().getLineNumber()).isEqualTo(2);
+        assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt1().getOffset()).isEqualTo(2);
         assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt1().getVarName()).isEqualTo("1");
         assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt2() instanceof WaitStatement);
-        assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt2().getLineNumber()).isEqualTo(3);
+        assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt2().getOffset()).isEqualTo(3);
         assertThat(((SequentialStatement) sequentialStatement2.getStmt1()).getStmt2().getVarName()).isEqualTo("2");
         assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt1() instanceof WaitStatement);
-        assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt1().getLineNumber()).isEqualTo(4);
+        assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt1().getOffset()).isEqualTo(4);
         assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt1().getVarName()).isEqualTo("3");
         assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt2() instanceof WaitStatement);
-        assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt2().getLineNumber()).isEqualTo(5);
+        assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt2().getOffset()).isEqualTo(5);
         assertThat(((SequentialStatement) sequentialStatement2.getStmt2()).getStmt2().getVarName()).isEqualTo("4");
-        assertThat(sequentialStatement1.getStmt2().getLineNumber()).isEqualTo(6);
+        assertThat(sequentialStatement1.getStmt2().getOffset()).isEqualTo(6);
         assertThat(sequentialStatement1.getStmt2().getVarName()).isEqualTo("5");
     }
 
@@ -128,13 +128,13 @@ class StatementShrinkerTest {
         assertThat(sequentialStatement3.getStmt1() instanceof WaitStatement);
         assertThat(sequentialStatement3.getStmt2() instanceof WaitStatement);
 
-        assertThat(sequentialStatement2.getStmt1().getLineNumber()).isEqualTo(2);
+        assertThat(sequentialStatement2.getStmt1().getOffset()).isEqualTo(2);
         assertThat(sequentialStatement2.getStmt1().getVarName()).isEqualTo("1");
-        assertThat(sequentialStatement2.getStmt2().getLineNumber()).isEqualTo(3);
+        assertThat(sequentialStatement2.getStmt2().getOffset()).isEqualTo(3);
         assertThat(sequentialStatement2.getStmt2().getVarName()).isEqualTo("2");
-        assertThat(sequentialStatement3.getStmt1().getLineNumber()).isEqualTo(4);
+        assertThat(sequentialStatement3.getStmt1().getOffset()).isEqualTo(4);
         assertThat(sequentialStatement3.getStmt1().getVarName()).isEqualTo("3");
-        assertThat(sequentialStatement3.getStmt2().getLineNumber()).isEqualTo(5);
+        assertThat(sequentialStatement3.getStmt2().getOffset()).isEqualTo(5);
         assertThat(sequentialStatement3.getStmt2().getVarName()).isEqualTo("4");
     }
 

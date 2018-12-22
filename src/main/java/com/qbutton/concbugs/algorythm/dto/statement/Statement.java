@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public abstract class Statement {
-    protected final int lineNumber;
+    protected final int offset;
     protected final String varName;
 }

@@ -44,7 +44,7 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
 
     private List<EnvEntry> registerMethodResultInEnv(MethodStatement statement, State originalState) {
         if (statement.getVarName() != null) {
-            ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getLineNumber());
+            ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getOffset());
             HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
             EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
 

@@ -12,8 +12,8 @@ import lombok.ToString;
 public final class CrossAssignmentStatement extends Statement {
     private final String rightValueName;
 
-    public CrossAssignmentStatement(int lineNumber, String leftVarName, String rightValueName) {
-        super(lineNumber, leftVarName);
+    public CrossAssignmentStatement(int offset, String leftVarName, String rightValueName) {
+        super(offset, leftVarName);
         this.rightValueName = rightValueName;
     }
 }

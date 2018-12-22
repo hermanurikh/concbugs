@@ -61,9 +61,9 @@ class VisitorServiceTest {
     @DisplayName("visits method correctly")
     void visitMethod() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "some var";
-        Statement methodBody = new DeclarationStatement(lineNumber, varName, "java.lang.Double");
+        Statement methodBody = new DeclarationStatement(offset, varName, "java.lang.Double");
         State emptyState = new State(
                 new Graph(
                         emptyMap()
@@ -107,8 +107,8 @@ class VisitorServiceTest {
 
         //then
         assertThat(newState, is(state4));
-        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "a", "int")), eq(emptyState));
-        verify(processorFacade).process(eq(new DeclarationStatement(lineNumber, "b", "java.lang.String")), eq(state2));
+        verify(processorFacade).process(eq(new DeclarationStatement(offset, "a", "int")), eq(emptyState));
+        verify(processorFacade).process(eq(new DeclarationStatement(offset, "b", "java.lang.String")), eq(state2));
         verify(processorFacade).process(eq(methodBody), eq(state3));
         verifyNoMoreInteractions(processorFacade);
     }

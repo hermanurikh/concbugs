@@ -15,8 +15,8 @@ public final class SynchronizedStatement extends Statement {
     private final Statement innerStatement;
     private final String className;
 
-    public SynchronizedStatement(int lineNumber, String varName, Statement innerStatement, String className) {
-        super(lineNumber, varName);
+    public SynchronizedStatement(int offset, String varName, Statement innerStatement, String className) {
+        super(offset, varName);
         this.innerStatement = innerStatement;
         this.className = className;
     }

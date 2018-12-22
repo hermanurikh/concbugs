@@ -30,7 +30,7 @@ public class MergeService {
         return updatedGraph;
     }
 
-    public State mergeStates(State s1, State s2, int lineNumber) {
+    public State mergeStates(State s1, State s2, int offset) {
         Graph mergedGraph = mergeGraphs(s1.getGraph(), s2.getGraph());
         Set<HeapObject> mergedRoots = Sets.union(s1.getRoots(), s2.getRoots());
 
@@ -38,7 +38,7 @@ public class MergeService {
         List<HeapObject> mergedLocks = new ArrayList<>(s1.getLocks());
         Set<HeapObject> mergedWaits = Sets.union(s1.getWaits(), s2.getWaits());
 
-        List<EnvEntry> mergedEnvs = mergeEnvs(s1.getEnvironment(), s2.getEnvironment(), lineNumber);
+        List<EnvEntry> mergedEnvs = mergeEnvs(s1.getEnvironment(), s2.getEnvironment(), offset);
 
         return new State(mergedGraph, mergedRoots, mergedLocks, mergedEnvs, mergedWaits);
     }
@@ -56,12 +56,12 @@ public class MergeService {
      *
      * @param env1       environment1
      * @param env2       environment2
-     * @param lineNumber line number where merge happens
+     * @param offset     offset where merge happens
      * @return merged environment
      */
     List<EnvEntry> mergeEnvs(List<EnvEntry> env1,
                                            List<EnvEntry> env2,
-                                           int lineNumber) {
+                                           int offset) {
         Set<String> env1Keys = getKeys(env1);
         Set<String> env2Keys = getKeys(env2);
 
@@ -84,7 +84,7 @@ public class MergeService {
                 mergedEnv = graphService.addOrReplaceEnv(env1Entry, mergedEnv);
             } else {
                 String lowestSuperClass = classFinderService.findLowestSuperClass(ho1.getClazz(), ho2.getClazz());
-                ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), lineNumber);
+                ProgramPoint freshProgramPoint = new ProgramPoint(env1Entry.getVarName(), offset);
 
                 mergedEnv = graphService.addOrReplaceEnv(
                         new EnvEntry(env1Entry.getVarName(), new HeapObject(freshProgramPoint, lowestSuperClass)), mergedEnv

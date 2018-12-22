@@ -51,11 +51,11 @@ class SynchronizedStatementProcessorTest {
     @DisplayName("processes correctly when synchronization object is already locked")
     void process_success_objectIsAlreadyLocked() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -97,11 +97,11 @@ class SynchronizedStatementProcessorTest {
     @DisplayName("processes correctly when some lock is already held")
     void process_success_someLockIsHeld() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -153,11 +153,11 @@ class SynchronizedStatementProcessorTest {
     @DisplayName("processes correctly when no locks are already held")
     void process_success_noLockIsHeld() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -209,11 +209,11 @@ class SynchronizedStatementProcessorTest {
     @DisplayName("processes correctly when no locks are already held, and synchronized object is already in graph")
     void process_success_noLockIsHeld_graphMerge() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
         HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
         HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
         HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
@@ -266,11 +266,11 @@ class SynchronizedStatementProcessorTest {
     @DisplayName("works correctly when object with given variable name is not found in env")
     void process_success_objectNotInEnv() {
         //given
-        int lineNumber = 34;
+        int offset = 34;
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(lineNumber, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
         State emptyState = new State(
                 new Graph(emptyMap()),
                 emptySet(),

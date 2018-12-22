@@ -39,9 +39,9 @@ class SequentialStatementProcessorTest {
     @DisplayName("processes correctly")
     void process() {
         //given
-        int lineNumber = 32;
-        Statement statement1 = new WaitStatement(lineNumber, "first");
-        Statement statement2 = new WaitStatement(lineNumber, "second");
+        int offset = 32;
+        Statement statement1 = new WaitStatement(offset, "first");
+        Statement statement2 = new WaitStatement(offset, "second");
 
         State state1 = Mockito.mock(State.class);
         State state2 = Mockito.mock(State.class);
@@ -66,8 +66,8 @@ class SequentialStatementProcessorTest {
 
         //then
         assertThat(resultState, is(state3));
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "first")), eq(state1));
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "second")), eq(state2));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "first")), eq(state1));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "second")), eq(state2));
         verifyNoMoreInteractions(visitorService);
     }
 }

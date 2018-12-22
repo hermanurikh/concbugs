@@ -13,8 +13,8 @@ public final class BranchStatement extends Statement {
     private final Statement stmt1;
     private final Statement stmt2;
 
-    public BranchStatement(int lineNumber, String varName, Statement stmt1, Statement stmt2) {
-        super(lineNumber, varName);
+    public BranchStatement(int offset, String varName, Statement stmt1, Statement stmt2) {
+        super(offset, varName);
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;
     }

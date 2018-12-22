@@ -13,7 +13,7 @@ public class MethodDeclaration {
      */
     private final List<Variable> variables;
     private final Statement methodBody;
-    private final int lineNumber;
+    private final int offset;
 
     @Data
     public static class Variable {

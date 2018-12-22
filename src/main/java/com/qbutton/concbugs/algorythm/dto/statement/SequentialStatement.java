@@ -13,8 +13,8 @@ public final class SequentialStatement extends Statement {
     private final Statement stmt1;
     private final Statement stmt2;
 
-    public SequentialStatement(int lineNumber, String varName, Statement stmt1, Statement stmt2) {
-        super(lineNumber, varName);
+    public SequentialStatement(int offset, String varName, Statement stmt1, Statement stmt2) {
+        super(offset, varName);
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;
     }

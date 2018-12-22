@@ -155,7 +155,7 @@ class MergeServiceTest {
             HeapObject newHeapObject = mergedEnvEntry.getHeapObject();
             assertThat(mergedEnvEntry.getVarName(), is(varName1));
             assertSame(newHeapObject.getClazz(), "java.lang.Number");
-            assertThat(newHeapObject.getProgramPoint().getLineNumber(), is(14));
+            assertThat(newHeapObject.getProgramPoint().getOffset(), is(14));
             assertThat(newHeapObject.getProgramPoint().getVariableName(), is(varName1));
         }
 

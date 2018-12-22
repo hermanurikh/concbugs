@@ -12,8 +12,8 @@ import lombok.ToString;
 public final class InnerAssignmentStatement extends Statement {
     private final String clazz;
 
-    public InnerAssignmentStatement(int lineNumber, String varName, String clazz) {
-        super(lineNumber, varName);
+    public InnerAssignmentStatement(int offset, String varName, String clazz) {
+        super(offset, varName);
         this.clazz = clazz;
     }
 }

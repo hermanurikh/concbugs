@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 public final class WaitStatement extends Statement {
-    public WaitStatement(int lineNumber, String varName) {
-        super(lineNumber, varName);
+    public WaitStatement(int offset, String varName) {
+        super(offset, varName);
     }
 }

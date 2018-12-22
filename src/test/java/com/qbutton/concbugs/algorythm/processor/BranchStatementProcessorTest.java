@@ -42,9 +42,9 @@ class BranchStatementProcessorTest {
     @DisplayName("processes correctly when statements are not null")
     void process() {
         //given
-        int lineNumber = 32;
-        Statement statement1 = new WaitStatement(lineNumber, "1");
-        Statement statement2 = new WaitStatement(lineNumber, "2");
+        int offset = 32;
+        Statement statement1 = new WaitStatement(offset, "1");
+        Statement statement2 = new WaitStatement(offset, "2");
 
         State initialState = Mockito.mock(State.class);
         State state2 = Mockito.mock(State.class);
@@ -73,8 +73,8 @@ class BranchStatementProcessorTest {
         //then
         assertThat(actual, is(resultState));
 
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "1")), eq(initialState));
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "2")), eq(initialState));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "1")), eq(initialState));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
         verify(mergeService).mergeStates(state2, state3, 34);
@@ -85,8 +85,8 @@ class BranchStatementProcessorTest {
     @DisplayName("processes correctly when first statement is null")
     void process_firstStatementIsNull() {
         //given
-        int lineNumber = 32;
-        Statement statement2 = new WaitStatement(lineNumber, "2");
+        int offset = 32;
+        Statement statement2 = new WaitStatement(offset, "2");
 
         State initialState = Mockito.mock(State.class);
         State state3 = Mockito.mock(State.class);
@@ -102,7 +102,7 @@ class BranchStatementProcessorTest {
         //then
         assertThat(actual, is(resultState));
 
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "2")), eq(initialState));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
         verify(mergeService).mergeStates(State.EMPTY_STATE, state3, 34);
@@ -113,8 +113,8 @@ class BranchStatementProcessorTest {
     @DisplayName("processes correctly when second statement is null")
     void process_secondStatementIsNull() {
         //given
-        int lineNumber = 32;
-        Statement statement2 = new WaitStatement(lineNumber, "2");
+        int offset = 32;
+        Statement statement2 = new WaitStatement(offset, "2");
 
         State initialState = Mockito.mock(State.class);
         State state3 = Mockito.mock(State.class);
@@ -130,7 +130,7 @@ class BranchStatementProcessorTest {
         //then
         assertThat(actual, is(resultState));
 
-        verify(visitorService).visitStatement(eq(new WaitStatement(lineNumber, "2")), eq(initialState));
+        verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
         verify(mergeService).mergeStates(state3, State.EMPTY_STATE, 66);

@@ -9,7 +9,7 @@ import lombok.SneakyThrows;
 @Data
 public final class ProgramPoint implements Cloneable {
     private final String variableName;
-    private final int lineNumber;
+    private final int offset;
 
     public static final ProgramPoint UNKNOWN = new ProgramPoint(null, -1);
 

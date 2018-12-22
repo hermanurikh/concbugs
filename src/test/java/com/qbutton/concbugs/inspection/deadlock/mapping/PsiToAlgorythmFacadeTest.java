@@ -88,7 +88,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Declaration_1.java");
             assertInstanceOf(readStatement, DeclarationStatement.class);
             DeclarationStatement result = (DeclarationStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(87);
+            assertThat(result.getOffset()).isEqualTo(87);
             assertThat(result.getVarName()).isEqualTo("a");
             assertThat(result.getClazz()).isEqualTo("java.lang.String");
         }
@@ -99,7 +99,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Declaration_2.java");
             assertInstanceOf(readStatement, DeclarationStatement.class);
             DeclarationStatement result = (DeclarationStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(70);
+            assertThat(result.getOffset()).isEqualTo(70);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getClazz()).isEqualTo("java.lang.String");
 
@@ -115,7 +115,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("CrossAssignment_1.java");
             assertInstanceOf(readStatement, CrossAssignmentStatement.class);
             CrossAssignmentStatement result = (CrossAssignmentStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(73);
+            assertThat(result.getOffset()).isEqualTo(73);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getRightValueName()).isEqualTo("a");
         }
@@ -131,7 +131,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("InnerAssignment_1.java");
             assertInstanceOf(readStatement, InnerAssignmentStatement.class);
             InnerAssignmentStatement result = (InnerAssignmentStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(99);
+            assertThat(result.getOffset()).isEqualTo(99);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getClazz()).isEqualTo("java.util.Date");
         }
@@ -143,7 +143,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertInstanceOf(readStatement, InnerAssignmentStatement.class);
             InnerAssignmentStatement innerAssignment = (InnerAssignmentStatement) readStatement;
 
-            assertThat(innerAssignment.getLineNumber()).isEqualTo(106);
+            assertThat(innerAssignment.getOffset()).isEqualTo(106);
             assertThat(innerAssignment.getVarName()).isEqualTo("b");
             assertThat(innerAssignment.getClazz()).isEqualTo("java.util.Date");
         }
@@ -193,7 +193,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Synchronized_1.java");
             assertInstanceOf(readStatement, SynchronizedStatement.class);
             SynchronizedStatement result = (SynchronizedStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(101);
+            assertThat(result.getOffset()).isEqualTo(101);
             assertThat(result.getVarName()).isEqualTo("a");
             assertInstanceOf(result.getInnerStatement(), CrossAssignmentStatement.class);
             CrossAssignmentStatement stmt1 = (CrossAssignmentStatement) result.getInnerStatement();
@@ -225,7 +225,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Wait_1.java");
             assertInstanceOf(readStatement, WaitStatement.class);
             WaitStatement result = (WaitStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(98);
+            assertThat(result.getOffset()).isEqualTo(98);
             assertThat(result.getVarName()).isEqualTo("a");
         }
     }
@@ -242,7 +242,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertInstanceOf(((SequentialStatement) readStatement).getStmt1(), DeclarationStatement.class);
             assertInstanceOf(((SequentialStatement) readStatement).getStmt2(), MethodStatement.class);
             MethodStatement result = (MethodStatement) ((SequentialStatement) readStatement).getStmt2();
-            assertThat(result.getLineNumber()).isEqualTo(119);
+            assertThat(result.getOffset()).isEqualTo(119);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getReturnType()).isEqualTo("java.util.Date");
             assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
@@ -257,7 +257,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(methodDeclaration.getVariables().get(1).getVariableClass()).isEqualTo("java.lang.Object");
             assertThat(methodDeclaration.getVariables().get(1).getVariableName()).isEqualTo("expected");
             DeclarationStatement declarationStatement = (DeclarationStatement) ((SequentialStatement) readStatement).getStmt1();
-            assertThat(declarationStatement.getLineNumber()).isEqualTo(115);
+            assertThat(declarationStatement.getOffset()).isEqualTo(115);
             assertThat(declarationStatement.getVarName()).isEqualTo("b");
             assertThat(declarationStatement.getClazz()).isEqualTo("java.util.Date");
         }
@@ -268,7 +268,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             Statement readStatement = readSingleStatementFromFirstMethod("Method_2.java");
             assertInstanceOf(readStatement, MethodStatement.class);
             MethodStatement result = (MethodStatement) readStatement;
-            assertThat(result.getLineNumber()).isEqualTo(97);
+            assertThat(result.getOffset()).isEqualTo(97);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getReturnType()).isEqualTo("java.util.Date");
             assertThat(result.getMethodDeclarations().size()).isEqualTo(1);
@@ -362,51 +362,51 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
             assertInstanceOf(actualStatements.get(0), DeclarationStatement.class);
             assertThat(actualStatements.get(0).getVarName()).isEqualTo("a");
-            assertThat(actualStatements.get(0).getLineNumber()).isEqualTo(130);
+            assertThat(actualStatements.get(0).getOffset()).isEqualTo(130);
             assertThat(((DeclarationStatement) actualStatements.get(0)).getClazz()).isEqualTo("Complex");
 
             assertInstanceOf(actualStatements.get(1), DeclarationStatement.class);
             assertThat(actualStatements.get(1).getVarName()).isEqualTo("a");
-            assertThat(actualStatements.get(1).getLineNumber()).isEqualTo(155);
+            assertThat(actualStatements.get(1).getOffset()).isEqualTo(155);
             assertThat(((DeclarationStatement) actualStatements.get(1)).getClazz()).isEqualTo("Complex");
 
             assertInstanceOf(actualStatements.get(2), DeclarationStatement.class);
             assertThat(actualStatements.get(2).getVarName()).isEqualTo("b");
-            assertThat(actualStatements.get(2).getLineNumber()).isEqualTo(204);
+            assertThat(actualStatements.get(2).getOffset()).isEqualTo(204);
             assertThat(((DeclarationStatement) actualStatements.get(2)).getClazz()).isEqualTo("Complex");
 
             assertInstanceOf(actualStatements.get(3), CrossAssignmentStatement.class);
             assertThat(actualStatements.get(3).getVarName()).isEqualTo("b");
-            assertThat(actualStatements.get(3).getLineNumber()).isEqualTo(245);
+            assertThat(actualStatements.get(3).getOffset()).isEqualTo(245);
             assertThat(((CrossAssignmentStatement) actualStatements.get(3)).getRightValueName()).isEqualTo("a");
 
             assertInstanceOf(actualStatements.get(4), DeclarationStatement.class);
             assertThat(actualStatements.get(4).getVarName()).isEqualTo("a");
-            assertThat(actualStatements.get(4).getLineNumber()).isEqualTo(363);
+            assertThat(actualStatements.get(4).getOffset()).isEqualTo(363);
             assertThat(((DeclarationStatement) actualStatements.get(4)).getClazz()).isEqualTo("Complex.ComplexImpl");
 
             assertInstanceOf(actualStatements.get(5), CrossAssignmentStatement.class);
             assertThat(actualStatements.get(5).getVarName()).isEqualTo("b");
-            assertThat(actualStatements.get(5).getLineNumber()).isEqualTo(359);
+            assertThat(actualStatements.get(5).getOffset()).isEqualTo(359);
             assertThat(((CrossAssignmentStatement) actualStatements.get(5)).getRightValueName()).isEqualTo("a");
 
             assertInstanceOf(actualStatements.get(6), CrossAssignmentStatement.class);
             assertThat(actualStatements.get(6).getVarName()).isEqualTo("a");
-            assertThat(actualStatements.get(6).getLineNumber()).isEqualTo(355);
+            assertThat(actualStatements.get(6).getOffset()).isEqualTo(355);
             assertThat(((CrossAssignmentStatement) actualStatements.get(6)).getRightValueName()).isEqualTo("b");
 
             assertInstanceOf(actualStatements.get(7), InnerAssignmentStatement.class);
             assertThat(actualStatements.get(7).getVarName()).isEqualTo("c");
-            assertThat(actualStatements.get(7).getLineNumber()).isEqualTo(425);
+            assertThat(actualStatements.get(7).getOffset()).isEqualTo(425);
             assertThat(((InnerAssignmentStatement) actualStatements.get(7)).getClazz()).isEqualTo("int");
 
             assertInstanceOf(actualStatements.get(8), InnerAssignmentStatement.class);
             assertThat(actualStatements.get(8).getVarName()).isEqualTo("c");
-            assertThat(actualStatements.get(8).getLineNumber()).isEqualTo(475);
+            assertThat(actualStatements.get(8).getOffset()).isEqualTo(475);
             assertThat(((InnerAssignmentStatement) actualStatements.get(8)).getClazz()).isEqualTo("int");
 
             assertInstanceOf(actualStatements.get(9), BranchStatement.class);
-            assertThat(actualStatements.get(9).getLineNumber()).isEqualTo(550);
+            assertThat(actualStatements.get(9).getOffset()).isEqualTo(550);
             assertInstanceOf(((BranchStatement) actualStatements.get(9)).getStmt1(), MethodStatement.class);
             assertInstanceOf(((BranchStatement) actualStatements.get(9)).getStmt2(), MethodStatement.class);
             MethodStatement branchMethodStatement1 = (MethodStatement) ((BranchStatement) actualStatements.get(9)).getStmt1();
@@ -417,7 +417,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(branchMethodStatement2.getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
 
             assertInstanceOf(actualStatements.get(10), BranchStatement.class);
-            assertThat(actualStatements.get(10).getLineNumber()).isEqualTo(721);
+            assertThat(actualStatements.get(10).getOffset()).isEqualTo(721);
             assertInstanceOf(((BranchStatement) actualStatements.get(10)).getStmt1(), MethodStatement.class);
             assertNull(((BranchStatement) actualStatements.get(10)).getStmt2());
             MethodStatement newBranchMethodStatement = (MethodStatement) ((BranchStatement) actualStatements.get(10)).getStmt1();
@@ -425,7 +425,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(newBranchMethodStatement.getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
 
             assertInstanceOf(actualStatements.get(11), BranchStatement.class);
-            assertThat(actualStatements.get(11).getLineNumber()).isEqualTo(834);
+            assertThat(actualStatements.get(11).getOffset()).isEqualTo(834);
             assertInstanceOf(((BranchStatement) actualStatements.get(11)).getStmt1(), MethodStatement.class);
             assertNull(((BranchStatement) actualStatements.get(11)).getStmt2());
             MethodStatement newBranchMethodStatement2 = (MethodStatement) ((BranchStatement) actualStatements.get(11)).getStmt1();
@@ -433,7 +433,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(newBranchMethodStatement2.getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
 
             assertInstanceOf(actualStatements.get(12), SynchronizedStatement.class);
-            assertThat(actualStatements.get(12).getLineNumber()).isEqualTo(969);
+            assertThat(actualStatements.get(12).getOffset()).isEqualTo(969);
             assertThat(actualStatements.get(12).getVarName()).isEqualTo("a");
             assertInstanceOf(((SynchronizedStatement) actualStatements.get(12)).getInnerStatement(), MethodStatement.class);
             MethodStatement newSynchronizedMethodStatement = (MethodStatement) ((SynchronizedStatement) actualStatements.get(12)).getInnerStatement();
@@ -442,43 +442,43 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
 
             assertInstanceOf(actualStatements.get(13), MethodStatement.class);
             assertThat(actualStatements.get(13).getVarName()).isEqualTo("other");
-            assertThat(actualStatements.get(13).getLineNumber()).isEqualTo(1154);
+            assertThat(actualStatements.get(13).getOffset()).isEqualTo(1154);
             assertThat(((MethodStatement) actualStatements.get(13)).getReturnType()).isEqualTo("Date");
             assertThat(((MethodStatement) actualStatements.get(13)).getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
 
             assertInstanceOf(actualStatements.get(14), DeclarationStatement.class);
             assertThat(actualStatements.get(14).getVarName()).isEqualTo("newDate");
-            assertThat(actualStatements.get(14).getLineNumber()).isEqualTo(1247);
+            assertThat(actualStatements.get(14).getOffset()).isEqualTo(1247);
             assertThat(((DeclarationStatement) actualStatements.get(14)).getClazz()).isEqualTo("Date");
 
             assertInstanceOf(actualStatements.get(15), MethodStatement.class);
             assertThat(actualStatements.get(15).getVarName()).isEqualTo("newDate");
-            assertThat(actualStatements.get(15).getLineNumber()).isEqualTo(1257);
+            assertThat(actualStatements.get(15).getOffset()).isEqualTo(1257);
             assertThat(((MethodStatement) actualStatements.get(15)).getReturnType()).isEqualTo("Date");
             assertThat(((MethodStatement) actualStatements.get(15)).getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
 
             assertInstanceOf(actualStatements.get(16), WaitStatement.class);
-            assertThat(actualStatements.get(16).getLineNumber()).isEqualTo(1310);
+            assertThat(actualStatements.get(16).getOffset()).isEqualTo(1310);
             assertThat(actualStatements.get(16).getVarName()).isEqualTo("a");
 
             assertInstanceOf(actualStatements.get(17), DeclarationStatement.class);
             assertThat(actualStatements.get(17).getVarName()).isEqualTo("ab");
-            assertThat(actualStatements.get(17).getLineNumber()).isEqualTo(1369);
+            assertThat(actualStatements.get(17).getOffset()).isEqualTo(1369);
             assertThat(((DeclarationStatement) actualStatements.get(17)).getClazz()).isEqualTo("int");
 
             assertInstanceOf(actualStatements.get(18), DeclarationStatement.class);
             assertThat(actualStatements.get(18).getVarName()).isEqualTo("ac");
-            assertThat(actualStatements.get(18).getLineNumber()).isEqualTo(1373);
+            assertThat(actualStatements.get(18).getOffset()).isEqualTo(1373);
             assertThat(((DeclarationStatement) actualStatements.get(18)).getClazz()).isEqualTo("int");
 
             assertInstanceOf(actualStatements.get(19), DeclarationStatement.class);
             assertThat(actualStatements.get(19).getVarName()).isEqualTo("ad");
-            assertThat(actualStatements.get(19).getLineNumber()).isEqualTo(1377);
+            assertThat(actualStatements.get(19).getOffset()).isEqualTo(1377);
             assertThat(((DeclarationStatement) actualStatements.get(19)).getClazz()).isEqualTo("int");
 
             assertInstanceOf(actualStatements.get(20), MethodStatement.class);
             assertThat(actualStatements.get(20).getVarName()).isEqualTo("newDate");
-            assertThat(actualStatements.get(20).getLineNumber()).isEqualTo(1751);
+            assertThat(actualStatements.get(20).getOffset()).isEqualTo(1751);
             assertThat(((MethodStatement) actualStatements.get(20)).getReturnType()).isEqualTo("Date");
             assertThat(((MethodStatement) actualStatements.get(20)).getMethodDeclarations().get(0)).isEqualTo(getDateMethodDeclaration);
         }
