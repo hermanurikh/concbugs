@@ -200,6 +200,19 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(stmt1.getVarName()).isEqualTo("b");
             assertThat(stmt1.getRightValueName()).isEqualTo("c");
         }
+
+        @Test
+        @DisplayName("when it is an empty synchronized method")
+        void synchronized_emptyMethod_success() {
+            Statement readStatement = readSingleStatementFromFirstMethod("Synchronized_2.java");
+            assertInstanceOf(readStatement, MethodStatement.class);
+            MethodStatement result = (MethodStatement) readStatement;
+            assertThat(result.getMethodDeclarations().get(0).getMethodBody() instanceof SynchronizedStatement);
+            SynchronizedStatement innerSynchronized = (SynchronizedStatement) result.getMethodDeclarations().get(0).getMethodBody();
+            assertThat(innerSynchronized.getClassName()).isEqualTo("Synchronized_2");
+            assertThat(innerSynchronized.getVarName()).isEqualTo("this");
+            assertNull(innerSynchronized.getInnerStatement());
+        }
     }
 
     @Nested
