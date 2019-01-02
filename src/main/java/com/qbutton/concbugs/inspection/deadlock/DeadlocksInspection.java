@@ -40,7 +40,7 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
     @NotNull
     public String getDisplayName() {
 
-        return "build lock-order graph";
+        return "Build lock-order graph";
     }
 
     @NotNull

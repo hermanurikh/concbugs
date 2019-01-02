@@ -16,6 +16,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <inspectionToolProvider implementation="com.qbutton.concbugs.inspection.deadlock.DeadlocksProvider"/>
+        <inspectionToolProvider implementation="com.qbutton.concbugs.inspection.stringlock.StringLockProvider"/>
     </extensions>
 
     <actions>

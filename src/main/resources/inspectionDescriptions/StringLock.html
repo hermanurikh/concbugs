@@ -1,0 +1,12 @@
+<html>
+<body>
+<p>According to <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.10.5">Section 3.10.5</a> of the Java Language Specification:</p>
+<ul>
+    <li>Literal strings within different classes in different packages likewise represent references to the same String object.
+    </li>
+</ul>
+
+Locking on Strings is therefore dangerous. Consider using one of the explicit locks from the java.util.concurrent.locks package or even an Object instead.
+<!-- tooltip end -->
+</body>
+</html>
