@@ -14,6 +14,7 @@ import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.di.BeanFactory;
 import com.qbutton.concbugs.inspection.deadlock.mapping.PsiToAlgorythmFacade;
+import com.qbutton.concbugs.inspection.deadlock.visualization.GraphVisualizer;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,9 @@ import java.util.List;
 public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
     private static final Logger LOG = Logger.getInstance("#com.intellij.codeInspection.DeadlocksInspection");
 
+    public DeadlocksInspection() {
+        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+    }
 
     @SuppressWarnings({"WeakerAccess"})
     @NonNls
@@ -43,9 +47,6 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
     public String getGroupDisplayName() {
         return GroupNames.BUGS_GROUP_NAME;
     }
-
-    //JavaFindUsagesProvider::canFindUsagesFor
-    //ReferencesSearch::search
 
     @Override
     public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
@@ -78,6 +79,8 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
                 }
 
                 Graph graph = algorythmFacade.visitLibrary(methodStatements);
+
+                GraphVisualizer.visualizeGraph(graph);
 
                 methodStatements.clear();
             }

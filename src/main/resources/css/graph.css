@@ -1,0 +1,17 @@
+graph {
+    fill-mode: gradient-radial;
+    fill-color: white, grey;
+}
+
+node {
+    shape: circle;
+    fill-color: rgb(125, 125, 125);
+    size: 20px;
+    text-alignment: above;
+    size-mode: fit;
+    text-style: bold;
+}
+
+edge {
+    arrow-size: 10, 5;
+}
