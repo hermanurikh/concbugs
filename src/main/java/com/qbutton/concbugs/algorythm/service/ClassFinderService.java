@@ -6,6 +6,7 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ClassInheritorsSearch;
+import com.qbutton.concbugs.algorythm.exception.IdeaIntegrationException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -89,7 +90,7 @@ public class ClassFinderService {
 
     private PsiClass findLowestSuperClass(PsiClass class1, PsiClass class2) {
         if (class1 == null || class2 == null) {
-            throw new RuntimeException("Can't find superclass when one of arguments is null");
+            throw new IdeaIntegrationException("Can't find superclass when one of arguments is null");
         }
 
         while (!class2.isInheritorDeep(class1, null) && !class1.equals(class2)) {

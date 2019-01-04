@@ -28,6 +28,7 @@ import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.Statement;
 import com.qbutton.concbugs.algorythm.dto.statement.SynchronizedStatement;
 import com.qbutton.concbugs.algorythm.dto.statement.WaitStatement;
+import com.qbutton.concbugs.algorythm.exception.IdeaIntegrationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +49,7 @@ public class StatementParser {
 
     private void parseAssignmentExpression(PsiAssignmentExpression expression, List<Statement> statements) {
         if (!(expression.getFirstChild() instanceof PsiReferenceExpression)) {
-            throw new RuntimeException("expression first child should be a PsiReferenceExpression, but it is " + expression.getFirstChild());
+            throw new IdeaIntegrationException("expression first child should be a PsiReferenceExpression, but it is " + expression.getFirstChild());
         }
 
         PsiReferenceExpression left = (PsiReferenceExpression) expression.getFirstChild();
@@ -160,7 +161,7 @@ public class StatementParser {
 
         for (PsiElement declaredElement : declaredElements) {
             if (!(declaredElement instanceof PsiLocalVariableImpl)) {
-                throw new RuntimeException("psiElement should be a local variable, but it is " + declaredElement);
+                throw new IdeaIntegrationException("psiElement should be a local variable, but it is " + declaredElement);
             }
 
             PsiLocalVariableImpl localVar = (PsiLocalVariableImpl) declaredElement;
@@ -204,7 +205,7 @@ public class StatementParser {
                 if (bodies.size() == 2) {
                     elseStatement = bodies.get(1);
                 } else {
-                    throw new RuntimeException("if statement contains more than 2 bodies - " + bodies);
+                    throw new IdeaIntegrationException("if statement contains more than 2 bodies - " + bodies);
                 }
             }
         }
@@ -230,7 +231,7 @@ public class StatementParser {
         PsiElement firstChild = body.getFirstChild();
 
         if (!(firstChild instanceof PsiCodeBlock)) {
-            throw new RuntimeException("PsiLoopStatement body firstChild is not a PsiCodeBlock: " + firstChild);
+            throw new IdeaIntegrationException("PsiLoopStatement body firstChild is not a PsiCodeBlock: " + firstChild);
         }
 
         Statement statement = this.parseStatements((PsiCodeBlock) firstChild);
@@ -292,7 +293,7 @@ public class StatementParser {
     when getSomeDate(a) - same with lastchild, but firstChild - psiReferenceExpression getSomeDate with first child PsiReferenceParameterList
      */
         if (!(expression.getLastChild() instanceof PsiExpressionList)) {
-            throw new RuntimeException("methodCallExpression is expected to have last child of PsiExpressionList");
+            throw new IdeaIntegrationException("methodCallExpression is expected to have last child of PsiExpressionList");
         }
 
         List<String> actualParameters = new ArrayList<>();

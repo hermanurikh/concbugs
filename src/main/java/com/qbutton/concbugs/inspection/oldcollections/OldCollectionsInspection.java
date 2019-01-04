@@ -29,6 +29,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.util.IncorrectOperationException;
+import com.qbutton.concbugs.algorythm.exception.IdeaIntegrationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -177,7 +178,7 @@ public class OldCollectionsInspection extends AbstractBaseJavaLocalInspectionToo
 
             if (psiClass == null) {
                 //this should never happen
-                throw new RuntimeException("class java.util.concurrent.ConcurrentHashMap could not be found");
+                throw new IdeaIntegrationException("class java.util.concurrent.ConcurrentHashMap could not be found");
             }
 
             PsiImportStatement importStatement = factory.createImportStatement(psiClass);
