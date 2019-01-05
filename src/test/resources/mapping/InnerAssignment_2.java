@@ -1,4 +1,4 @@
-public class CrossAssignment_2 {
+public class InnerAssignment_2 {
 
     java.util.Date date;
 
