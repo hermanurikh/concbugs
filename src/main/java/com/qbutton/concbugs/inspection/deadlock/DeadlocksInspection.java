@@ -3,7 +3,6 @@ package com.qbutton.concbugs.inspection.deadlock;
 import com.intellij.codeInsight.daemon.GroupNames;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementVisitor;
@@ -27,7 +26,6 @@ import java.util.List;
 
 @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"})
 public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
-    private static final Logger LOG = Logger.getInstance("#com.intellij.codeInspection.DeadlocksInspection");
 
     public DeadlocksInspection() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
