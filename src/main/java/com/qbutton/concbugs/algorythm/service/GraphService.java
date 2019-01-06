@@ -52,9 +52,11 @@ public class GraphService {
         //if this is a replace, not a remove operation, put a new node
         if (needToReplace) {
             //a merge is needed because this node might already be in the set
-            neighbors.merge(newHo, oldEdges, (oldObjects, newObjects) -> new HashSet<>(Sets.union(oldEdges, newObjects)));
+            neighbors.merge(newHo, oldEdges, (oldObjects, newObjects) -> new HashSet<>(Sets.union(oldObjects, newObjects)));
             //ensure there is no self-link
-            neighbors.get(newHo).remove(newHo);
+            if (!newHo.getProgramPoint().isUnknown()) {
+                neighbors.get(newHo).remove(newHo);
+            }
         }
 
         //remove connections to this node and add new, if it is a replace operation

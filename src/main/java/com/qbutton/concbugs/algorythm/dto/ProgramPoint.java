@@ -13,8 +13,8 @@ public final class ProgramPoint implements Cloneable {
 
     public static final ProgramPoint UNKNOWN = new ProgramPoint(null, -1);
 
-    private boolean isUnknown() {
-        return this == UNKNOWN;
+    public boolean isUnknown() {
+        return this.equals(UNKNOWN);
     }
 
     @SneakyThrows

@@ -1,5 +1,6 @@
 package com.qbutton.concbugs.inspection.deadlock.mapping;
 
+import com.intellij.psi.PsiArrayAccessExpression;
 import com.intellij.psi.PsiAssignmentExpression;
 import com.intellij.psi.PsiBlockStatement;
 import com.intellij.psi.PsiCodeBlock;
@@ -16,6 +17,7 @@ import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiSynchronizedStatement;
+import com.intellij.psi.PsiType;
 import com.intellij.psi.impl.source.tree.java.PsiLocalVariableImpl;
 import com.intellij.psi.search.searches.OverridingMethodsSearch;
 import com.qbutton.concbugs.algorythm.dto.MethodDeclaration;
@@ -48,11 +50,16 @@ public class StatementParser {
     private final StatementMapper statementMapper;
 
     private void parseAssignmentExpression(PsiAssignmentExpression expression, List<Statement> statements) {
+        PsiReferenceExpression left;
         if (!(expression.getFirstChild() instanceof PsiReferenceExpression)) {
-            throw new IdeaIntegrationException("expression first child should be a PsiReferenceExpression, but it is " + expression.getFirstChild());
+            if (expression.getFirstChild() instanceof PsiArrayAccessExpression) {
+                left = getPsiReferenceExpression(expression);
+            } else {
+                throw new IdeaIntegrationException("expression first child should be a PsiReferenceExpression, but it is " + expression.getFirstChild());
+            }
+        } else {
+            left = (PsiReferenceExpression) expression.getFirstChild();
         }
-
-        PsiReferenceExpression left = (PsiReferenceExpression) expression.getFirstChild();
 
         if (expression.getLastChild() instanceof PsiAssignmentExpression) {
             PsiAssignmentExpression lastChild = (PsiAssignmentExpression) expression.getLastChild();
@@ -84,6 +91,16 @@ public class StatementParser {
         } else if (expression.getLastChild() instanceof PsiMethodCallExpression) {
             parseMethodCallExpression((PsiMethodCallExpression) expression.getLastChild(), statements, left.getText());
         }
+    }
+
+    private PsiReferenceExpression getPsiReferenceExpression(PsiAssignmentExpression expression) {
+        PsiReferenceExpression left;
+        PsiArrayAccessExpression arrayExpression = (PsiArrayAccessExpression) expression.getFirstChild();
+        while (!(arrayExpression.getFirstChild() instanceof PsiReferenceExpression)) {
+            arrayExpression = (PsiArrayAccessExpression) arrayExpression.getFirstChild();
+        }
+        left = (PsiReferenceExpression) arrayExpression.getFirstChild();
+        return left;
     }
 
     private Statement parseStatements(PsiCodeBlock psiCodeBlock) {
@@ -133,6 +150,13 @@ public class StatementParser {
         List<MethodDeclaration> methodDeclarations = new ArrayList<>();
         List<PsiMethod> methodsToParse = new ArrayList<>();
 
+        PsiType returnType = psiMethod.getReturnType();
+
+        if (returnType == null) {
+            //it is a constructor
+            return null;
+        }
+
         int textOffset = initialTextOffset == null
                 ? psiMethod.getTextOffset()
                 : initialTextOffset;
@@ -142,13 +166,13 @@ public class StatementParser {
 
         methodsToParse.forEach(addMethodDeclarationIfNeeded(psiMethod.getName(), methodDeclarations));
 
-        String returnType = psiMethod.getReturnType().getCanonicalText();
-
-        return new MethodStatement(textOffset, resultVarName, methodDeclarations, returnType, actualParameters);
+        String returnTypeAsString = returnType.getCanonicalText();
+        return new MethodStatement(textOffset, resultVarName, methodDeclarations, returnTypeAsString, actualParameters);
     }
 
     /**
      * Top-level method parsing.
+     *
      * @param psiMethod psiMethod
      * @return resulting method statement
      */

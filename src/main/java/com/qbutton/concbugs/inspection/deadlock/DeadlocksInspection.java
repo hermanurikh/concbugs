@@ -65,7 +65,10 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
                 }
 
                 MethodStatement methodStatement = parsingFacade.parseMethod(method);
-                methodStatements.add(methodStatement);
+
+                if (methodStatement != null) {
+                    methodStatements.add(methodStatement);
+                }
             }
 
             @Override

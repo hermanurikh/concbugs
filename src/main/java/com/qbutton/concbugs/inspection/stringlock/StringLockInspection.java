@@ -29,7 +29,6 @@ public class StringLockInspection extends AbstractBaseJavaLocalInspectionTool {
 
   @NotNull
   public String getDisplayName() {
-
     return "String should better not be used as a lock";
   }
 
@@ -70,6 +69,7 @@ public class StringLockInspection extends AbstractBaseJavaLocalInspectionTool {
     };
   }
 
+  @Override
   public JComponent createOptionsPanel() {
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     final JTextField checkedClasses = new JTextField(CHECKED_CLASSES);

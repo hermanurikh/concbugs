@@ -172,4 +172,16 @@ class StatementShrinkerTest {
 
         assertThat(statement).isEqualTo(statement1);
     }
+
+    @Test
+    @DisplayName("shrinks correctly when both statements are null")
+    void shrink_bothNullStatements_success() {
+        List<Statement> statements = new ArrayList<>(2);
+        statements.add(null);
+        statements.add(null);
+
+        Statement statement = statementShrinker.shrinkStatements(statements);
+
+        assertNull(statement);
+    }
 }

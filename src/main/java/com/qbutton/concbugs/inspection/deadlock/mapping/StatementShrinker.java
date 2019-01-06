@@ -25,9 +25,7 @@ public class StatementShrinker {
                 Statement second = statementsToShrink.get(i + 1);
 
                 Statement unionStatement = getStatement(first, second);
-                if (unionStatement != null) {
-                    currentStatements.add(unionStatement);
-                }
+                currentStatements.add(unionStatement);
             }
             if (currentSize % 2 == 1) {
                 currentStatements.add(statementsToShrink.get(currentSize - 1));
