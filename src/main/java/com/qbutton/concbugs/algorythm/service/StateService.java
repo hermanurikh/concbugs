@@ -60,8 +60,12 @@ public class StateService {
                             currentCalleeGraph, currentCalleeRoots, lockedHeapObject);
                 } else {
                     //caller did not lock object, rename object to actual arg
+                    HeapObject actualParameter = actualParameters.get(index);
                     replaceNodeResult = graphService.replaceNode(
-                            currentCalleeGraph, currentCalleeRoots, lockedHeapObject, actualParameters.get(index));
+                            currentCalleeGraph, currentCalleeRoots, lockedHeapObject,
+                            new HeapObject(
+                                    actualParameter.getProgramPoint(), actualParameter.getClazz(), lockedHeapObject.getLockMethodName(), actualParameter.getLockVarName()
+                            ));
                 }
             } else {
                 //object is not from caller, replace object with bottom program point
