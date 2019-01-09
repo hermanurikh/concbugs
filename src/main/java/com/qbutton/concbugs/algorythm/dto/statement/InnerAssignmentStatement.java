@@ -11,9 +11,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class InnerAssignmentStatement extends Statement {
     private final String clazz;
+    private final String enclosingMethodName;
 
-    public InnerAssignmentStatement(int offset, String varName, String clazz) {
+    public InnerAssignmentStatement(int offset, String varName, String clazz, String enclosingMethodName) {
         super(offset, varName);
         this.clazz = clazz;
+        this.enclosingMethodName = enclosingMethodName;
     }
 }

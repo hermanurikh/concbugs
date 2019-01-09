@@ -42,6 +42,8 @@ class SynchronizedStatementProcessorTest {
 
     private SynchronizedStatementProcessor synchronizedStatementProcessor;
 
+    private static final String METHOD_NAME = "bar";
+
     @BeforeEach
     void init() {
         synchronizedStatementProcessor = new SynchronizedStatementProcessor(visitorService);
@@ -55,10 +57,10 @@ class SynchronizedStatementProcessorTest {
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
-        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
-        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
-        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className, METHOD_NAME);
+        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int", METHOD_NAME, "l1");
+        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String", METHOD_NAME, "l2");
+        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number", METHOD_NAME, "l3");
         Graph graph = new Graph(ImmutableMap.of(
                 ho1, ImmutableSet.of(ho2, ho3),
                 ho2, ImmutableSet.of(ho3),
@@ -101,10 +103,10 @@ class SynchronizedStatementProcessorTest {
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
-        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
-        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
-        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className, METHOD_NAME);
+        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int", METHOD_NAME, "l1");
+        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String", METHOD_NAME, "l2");
+        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number", METHOD_NAME, "l3");
         Graph graph1 = new Graph(ImmutableMap.of(
                 ho1, ImmutableSet.of(ho2),
                 ho2, ImmutableSet.of(ho1)
@@ -157,10 +159,10 @@ class SynchronizedStatementProcessorTest {
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
-        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
-        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
-        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className, METHOD_NAME);
+        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int", METHOD_NAME, "l1");
+        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String", METHOD_NAME, "l2");
+        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number", METHOD_NAME, "l3");
         Graph graph1 = new Graph(ImmutableMap.of(
                 ho1, ImmutableSet.of(ho2),
                 ho2, ImmutableSet.of(ho1)
@@ -213,10 +215,10 @@ class SynchronizedStatementProcessorTest {
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
-        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int");
-        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String");
-        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number");
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className, METHOD_NAME);
+        HeapObject ho1 = new HeapObject(new ProgramPoint("v1", 2), "int", METHOD_NAME, "l1");
+        HeapObject ho2 = new HeapObject(new ProgramPoint("v2", 3), "java.lang.String", METHOD_NAME, "l2");
+        HeapObject ho3 = new HeapObject(new ProgramPoint("v3", 4), "java.lang.Number", METHOD_NAME, "l3");
         Graph graph1 = new Graph(ImmutableMap.of(
                 ho1, ImmutableSet.of(ho2),
                 ho2, ImmutableSet.of(ho1),
@@ -270,7 +272,7 @@ class SynchronizedStatementProcessorTest {
         String varName = "this";
         WaitStatement body = new WaitStatement(35, "abc");
         String className = "java.lang.String";
-        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className);
+        SynchronizedStatement statement = new SynchronizedStatement(offset, varName, body, className, METHOD_NAME);
         State emptyState = new State(
                 new Graph(emptyMap()),
                 emptySet(),

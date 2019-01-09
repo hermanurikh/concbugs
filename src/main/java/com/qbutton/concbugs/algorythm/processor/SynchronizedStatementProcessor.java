@@ -39,7 +39,8 @@ public final class SynchronizedStatementProcessor extends AbstractStatementProce
         if (!hoOptional.isPresent()) {
             //it might be a field reference, add it to envs
             LOGGER.warning("no envEntry found for varName " + statement.getVarName() + ", may be a field reference");
-            HeapObject newHeapObject = new HeapObject(ProgramPoint.UNKNOWN, statement.getClassName());
+            HeapObject newHeapObject = new HeapObject(
+                    ProgramPoint.UNKNOWN, statement.getClassName(), statement.getEnclosingMethodName(), statement.getVarName());
             hoOptional = Optional.of(newHeapObject);
 
             List<EnvEntry> newEnv = new ArrayList<>(originalState.getEnvironment());

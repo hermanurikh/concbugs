@@ -12,10 +12,12 @@ import lombok.ToString;
 public final class BranchStatement extends Statement {
     private final Statement stmt1;
     private final Statement stmt2;
+    private final String enclosingMethodName;
 
-    public BranchStatement(int offset, String varName, Statement stmt1, Statement stmt2) {
+    public BranchStatement(int offset, String varName, Statement stmt1, Statement stmt2, String enclosingMethodName) {
         super(offset, varName);
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;
+        this.enclosingMethodName = enclosingMethodName;
     }
 }

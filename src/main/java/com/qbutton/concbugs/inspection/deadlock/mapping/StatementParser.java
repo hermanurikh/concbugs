@@ -71,7 +71,7 @@ public class StatementParser {
             statements.add(statement);
         } else if (expression.getLastChild() instanceof PsiNewExpression) {
             DeclarationStatement statement = new DeclarationStatement(
-                    left.getTextOffset(), left.getText(), getVarClass((PsiNewExpression) expression.getLastChild()));
+                    left.getTextOffset(), left.getText(), getVarClass((PsiNewExpression) expression.getLastChild()), getEnclosingMethodName(expression));
             statements.add(statement);
         } else if (expression.getLastChild() instanceof PsiReferenceExpression) {
             PsiReferenceExpression right = (PsiReferenceExpression) expression.getLastChild();
@@ -84,7 +84,7 @@ public class StatementParser {
             } else {
                 //inner assignment statement
                 InnerAssignmentStatement statement = new InnerAssignmentStatement(
-                        left.getTextOffset(), left.getText(), getVarClass(right)
+                        left.getTextOffset(), left.getText(), getVarClass(right), getEnclosingMethodName(expression)
                 );
                 statements.add(statement);
             }
@@ -191,13 +191,14 @@ public class StatementParser {
             PsiLocalVariableImpl localVar = (PsiLocalVariableImpl) declaredElement;
             PsiExpression initializer = localVar.getInitializer();
 
+            String enclosingMethodName = getEnclosingMethodName(psiDeclarationStatement);
 
             if (initializer instanceof PsiReferenceExpression) {
                 statements.add(new InnerAssignmentStatement(
-                        localVar.getTextOffset(), localVar.getName(), getVarClass((PsiReferenceExpression) initializer)));
+                        localVar.getTextOffset(), localVar.getName(), getVarClass((PsiReferenceExpression) initializer), enclosingMethodName));
             } else {
                 statements.add(new DeclarationStatement(
-                        localVar.getTextOffset(), localVar.getName(), getVarClass(localVar)));
+                        localVar.getTextOffset(), localVar.getName(), getVarClass(localVar), enclosingMethodName));
                 if (initializer instanceof PsiMethodCallExpression) {
                     parseMethodCallExpression((PsiMethodCallExpression) initializer, statements, localVar.getName());
                 }
@@ -234,7 +235,7 @@ public class StatementParser {
             }
         }
 
-        statements.add(new BranchStatement(psiIfStatement.getTextOffset(), null, ifStatement, elseStatement));
+        statements.add(new BranchStatement(psiIfStatement.getTextOffset(), null, ifStatement, elseStatement, getEnclosingMethodName(psiIfStatement)));
     }
 
     void parseSynchronizedStatement(PsiSynchronizedStatement psiSynchronizedStatement, List<Statement> statements) {
@@ -245,7 +246,8 @@ public class StatementParser {
                 psiSynchronizedStatement.getTextOffset(),
                 lockExpression.getText(),
                 this.parseStatements(psiSynchronizedStatement.getBody()),
-                className));
+                className,
+                getEnclosingMethodName(psiSynchronizedStatement)));
     }
 
     void parseLoopStatement(PsiLoopStatement psiLoopStatement, List<Statement> statements) {
@@ -309,13 +311,16 @@ public class StatementParser {
         return method.getModifierList().hasModifierProperty("static");
     }
 
-    private List<String> getActualParameters(PsiMethodCallExpression expression, PsiMethod psiMethod) {
-    /*when m.getSomeDate(a)
-    expression.getFirstChild() - PsiReferenceExpression m.getSomedate with first child PsiReferenceExpression m (expr.fc.fc.getText())
-    expression.getLastChild() - PsiExpressionListImpl .getExpressions() [0] - PsiReferenceExpression a (((PsiExpressionListImpl) expression.getLastChild()).getExpressions()[0].getText())
+    private String getEnclosingMethodName(PsiElement psiElement) {
+        while (!(psiElement instanceof PsiMethod)) {
+            psiElement = psiElement.getParent();
+        }
 
-    when getSomeDate(a) - same with lastchild, but firstChild - psiReferenceExpression getSomeDate with first child PsiReferenceParameterList
-     */
+        return ((PsiMethod) psiElement).getName();
+    }
+
+    private List<String> getActualParameters(PsiMethodCallExpression expression, PsiMethod psiMethod) {
+
         if (!(expression.getLastChild() instanceof PsiExpressionList)) {
             throw new IdeaIntegrationException("methodCallExpression is expected to have last child of PsiExpressionList");
         }
@@ -347,7 +352,7 @@ public class StatementParser {
                                                   String synchronizationClass) {
         if (method.getModifierList().hasModifierProperty("synchronized")) {
             methodBody = new SynchronizedStatement(
-                    textOffset, synchronizationVarName, methodBody, synchronizationClass);
+                    textOffset, synchronizationVarName, methodBody, synchronizationClass, method.getName());
         }
         return methodBody;
     }

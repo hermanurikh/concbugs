@@ -42,7 +42,8 @@ public class VisitorService {
             newState = visitStatement(new DeclarationStatement(
                     methodDeclaration.getOffset(),
                     var.getVariableName(),
-                    var.getVariableClass()
+                    var.getVariableClass(),
+                    methodDeclaration.getMethodName()
             ), newState);
         }
 

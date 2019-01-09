@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.DocumentAdapter;
 import com.qbutton.concbugs.algorythm.AlgorythmFacade;
-import com.qbutton.concbugs.algorythm.dto.Graph;
+import com.qbutton.concbugs.algorythm.dto.VisualisationNode;
 import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.di.BeanFactory;
 import com.qbutton.concbugs.inspection.deadlock.mapping.PsiToAlgorythmFacade;
@@ -23,6 +23,8 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressFBWarnings({"DLS_DEAD_LOCAL_STORE", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"})
 public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
@@ -79,7 +81,7 @@ public class DeadlocksInspection extends AbstractBaseJavaLocalInspectionTool {
                     return;
                 }
 
-                Graph graph = algorythmFacade.visitLibrary(methodStatements);
+                Map<VisualisationNode, Set<VisualisationNode>> graph = algorythmFacade.visitLibrary(methodStatements);
 
                 GraphVisualizer.visualizeGraph(graph);
 

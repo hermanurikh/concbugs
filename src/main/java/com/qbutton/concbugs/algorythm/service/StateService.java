@@ -66,7 +66,8 @@ public class StateService {
             } else {
                 //object is not from caller, replace object with bottom program point
                 replaceNodeResult = graphService.replaceNode(
-                        currentCalleeGraph, currentCalleeRoots, lockedHeapObject, new HeapObject(ProgramPoint.UNKNOWN, lockedHeapObject.getClazz()));
+                        currentCalleeGraph, currentCalleeRoots, lockedHeapObject,
+                        new HeapObject(ProgramPoint.UNKNOWN, lockedHeapObject.getClazz(), lockedHeapObject.getLockMethodName(), lockedHeapObject.getLockVarName()));
             }
         }
 
@@ -83,7 +84,8 @@ public class StateService {
             if (index >= 0) {
                 newWaitSet.add(actualParameters.get(index));
             } else {
-                newWaitSet.add(new HeapObject(ProgramPoint.UNKNOWN, wait.getClazz()));
+                newWaitSet.add(new HeapObject(
+                        ProgramPoint.UNKNOWN, wait.getClazz(), wait.getLockMethodName(), wait.getLockVarName()));
             }
         });
         return newWaitSet;

@@ -14,10 +14,13 @@ import lombok.ToString;
 public final class SynchronizedStatement extends Statement {
     private final Statement innerStatement;
     private final String className;
+    private final String enclosingMethodName;
 
-    public SynchronizedStatement(int offset, String varName, Statement innerStatement, String className) {
+    public SynchronizedStatement(int offset, String varName, Statement innerStatement, String className,
+                                 String enclosingMethodName) {
         super(offset, varName);
         this.innerStatement = innerStatement;
         this.className = className;
+        this.enclosingMethodName = enclosingMethodName;
     }
 }

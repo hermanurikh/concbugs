@@ -24,7 +24,9 @@ public final class InnerAssignmentStatementProcessor extends AbstractStatementPr
                 statement.getVarName(),
                 new HeapObject(
                         new ProgramPoint(statement.getVarName(), statement.getOffset()),
-                        statement.getClazz()
+                        statement.getClazz(),
+                         statement.getEnclosingMethodName(),
+                        statement.getVarName()
                 ));
 
         List<EnvEntry> newEnv = graphService.addOrReplaceEnv(newEnvEntry, originalState.getEnvironment());

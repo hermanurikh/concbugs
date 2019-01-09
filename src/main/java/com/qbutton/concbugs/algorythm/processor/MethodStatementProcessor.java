@@ -14,6 +14,7 @@ import com.qbutton.concbugs.algorythm.service.MergeService;
 import com.qbutton.concbugs.algorythm.service.StateService;
 import com.qbutton.concbugs.algorythm.service.VisitorService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -45,13 +46,21 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
     private List<EnvEntry> registerMethodResultInEnv(MethodStatement statement, State originalState) {
         if (statement.getVarName() != null) {
             ProgramPoint newProgramPoint = new ProgramPoint(statement.getVarName(), statement.getOffset());
-            HeapObject returnVarHeapObject = new HeapObject(newProgramPoint, statement.getReturnType());
+            HeapObject returnVarHeapObject = new HeapObject(
+                    newProgramPoint, statement.getReturnType(), getMethodName(statement), statement.getVarName());
             EnvEntry newEnvEntry = new EnvEntry(statement.getVarName(), returnVarHeapObject);
 
             return graphService.addOrReplaceEnv(newEnvEntry, originalState.getEnvironment());
         }
 
         return originalState.getEnvironment();
+    }
+
+    private String getMethodName(MethodStatement statement) {
+        if (CollectionUtils.isNotEmpty(statement.getMethodDeclarations())) {
+            return statement.getMethodDeclarations().get(0).getMethodName();
+        }
+        throw new AlgorithmValidationException("Method should have at least one methodDeclaration: " + statement);
     }
 
     private State mergeMethod(State originalState,
@@ -105,7 +114,8 @@ public final class MethodStatementProcessor extends AbstractStatementProcessor<M
                 ?
                 //top level method, replace with unknown heap objects
                 formalParameters.stream()
-                        .map(ho -> new HeapObject(ProgramPoint.UNKNOWN, ho.getClazz()))
+                        .map(ho -> new HeapObject(
+                                ProgramPoint.UNKNOWN, ho.getClazz(), ho.getLockMethodName(), ho.getLockVarName()))
                         .collect(Collectors.toList())
                 :
                 actualStringParameters.stream()

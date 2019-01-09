@@ -33,6 +33,8 @@ class BranchStatementProcessorTest {
 
     private BranchStatementProcessor branchStatementProcessor;
 
+    private static final String METHOD_NAME = "foo";
+
     @BeforeEach
     void init() {
         branchStatementProcessor = new BranchStatementProcessor(visitorService, mergeService);
@@ -64,11 +66,11 @@ class BranchStatementProcessorTest {
             return null;
         });
 
-        when(mergeService.mergeStates(state2, state3, 34)).thenReturn(resultState);
+        when(mergeService.mergeStates(state2, state3, 34, METHOD_NAME)).thenReturn(resultState);
 
         //when
         State actual = branchStatementProcessor.process(
-                new BranchStatement(34, "", statement1, statement2), initialState);
+                new BranchStatement(34, "", statement1, statement2, METHOD_NAME), initialState);
 
         //then
         assertThat(actual, is(resultState));
@@ -77,7 +79,7 @@ class BranchStatementProcessorTest {
         verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
-        verify(mergeService).mergeStates(state2, state3, 34);
+        verify(mergeService).mergeStates(state2, state3, 34, METHOD_NAME);
         verifyNoMoreInteractions(mergeService);
     }
 
@@ -93,11 +95,11 @@ class BranchStatementProcessorTest {
         State resultState = Mockito.mock(State.class);
 
         when(visitorService.visitStatement(statement2, initialState)).thenReturn(state3);
-        when(mergeService.mergeStates(State.EMPTY_STATE, state3, 34)).thenReturn(resultState);
+        when(mergeService.mergeStates(State.EMPTY_STATE, state3, 34, METHOD_NAME)).thenReturn(resultState);
 
         //when
         State actual = branchStatementProcessor.process(
-                new BranchStatement(34, "", null, statement2), initialState);
+                new BranchStatement(34, "", null, statement2, METHOD_NAME), initialState);
 
         //then
         assertThat(actual, is(resultState));
@@ -105,7 +107,7 @@ class BranchStatementProcessorTest {
         verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
-        verify(mergeService).mergeStates(State.EMPTY_STATE, state3, 34);
+        verify(mergeService).mergeStates(State.EMPTY_STATE, state3, 34, METHOD_NAME);
         verifyNoMoreInteractions(mergeService);
     }
 
@@ -121,11 +123,11 @@ class BranchStatementProcessorTest {
         State resultState = Mockito.mock(State.class);
 
         when(visitorService.visitStatement(statement2, initialState)).thenReturn(state3);
-        when(mergeService.mergeStates(state3, State.EMPTY_STATE, 66)).thenReturn(resultState);
+        when(mergeService.mergeStates(state3, State.EMPTY_STATE, 66, METHOD_NAME)).thenReturn(resultState);
 
         //when
         State actual = branchStatementProcessor.process(
-                new BranchStatement(66, "", statement2, null), initialState);
+                new BranchStatement(66, "", statement2, null, METHOD_NAME), initialState);
 
         //then
         assertThat(actual, is(resultState));
@@ -133,7 +135,7 @@ class BranchStatementProcessorTest {
         verify(visitorService).visitStatement(eq(new WaitStatement(offset, "2")), eq(initialState));
         verifyNoMoreInteractions(visitorService);
 
-        verify(mergeService).mergeStates(state3, State.EMPTY_STATE, 66);
+        verify(mergeService).mergeStates(state3, State.EMPTY_STATE, 66, METHOD_NAME);
         verifyNoMoreInteractions(mergeService);
     }
 
@@ -145,7 +147,7 @@ class BranchStatementProcessorTest {
 
         //when
         State actual = branchStatementProcessor.process(
-                new BranchStatement(66, "", null, null), initialState);
+                new BranchStatement(66, "", null, null, METHOD_NAME), initialState);
 
         //then
         assertThat(actual, is(initialState));

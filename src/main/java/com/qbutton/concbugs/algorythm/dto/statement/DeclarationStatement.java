@@ -13,9 +13,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class DeclarationStatement extends Statement {
     private final String clazz;
+    private final String enclosingMethodName;
 
-    public DeclarationStatement(int offset, String varName, String clazz) {
+    public DeclarationStatement(int offset, String varName, String clazz, String enclosingMethodName) {
         super(offset, varName);
         this.clazz = clazz;
+        this.enclosingMethodName = enclosingMethodName;
     }
 }

@@ -1,8 +1,8 @@
 package com.qbutton.concbugs.algorythm;
 
 import com.google.common.collect.ImmutableList;
-import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.State;
+import com.qbutton.concbugs.algorythm.dto.VisualisationNode;
 import com.qbutton.concbugs.algorythm.dto.statement.MethodStatement;
 import com.qbutton.concbugs.algorythm.processor.ProcessorFacade;
 import com.qbutton.concbugs.algorythm.service.GraphService;
@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
@@ -63,12 +65,12 @@ class AlgorythmFacadeTest {
             return null;
         });
 
-        Graph emptyGraph = new Graph(Collections.emptyMap());
+        Map<VisualisationNode, Set<VisualisationNode>> emptyGraph = Collections.emptyMap();
         when(graphService.postProcess(ImmutableList.of(methodProcessResult1, methodProcessResult2)))
                 .thenReturn(emptyGraph);
 
         //when
-        Graph resultGraph = algorythmFacade.visitLibrary(ImmutableList.of(method1, method2));
+        Map<VisualisationNode, Set<VisualisationNode>> resultGraph = algorythmFacade.visitLibrary(ImmutableList.of(method1, method2));
 
         //then
         assertThat(resultGraph, is(emptyGraph));

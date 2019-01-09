@@ -4,8 +4,8 @@ import com.google.common.collect.Sets;
 import com.qbutton.concbugs.algorythm.dto.EnvEntry;
 import com.qbutton.concbugs.algorythm.dto.Graph;
 import com.qbutton.concbugs.algorythm.dto.HeapObject;
-import com.qbutton.concbugs.algorythm.dto.ProgramPoint;
 import com.qbutton.concbugs.algorythm.dto.State;
+import com.qbutton.concbugs.algorythm.dto.VisualisationNode;
 import com.qbutton.concbugs.algorythm.exception.AlgorithmValidationException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -140,8 +140,12 @@ public class GraphService {
     }
 
     @SuppressWarnings("unchecked")
-    public Graph postProcess(List<State> fixedMethodStates) {
-        Graph result = new Graph(Collections.emptyMap());
+    public Map<VisualisationNode, Set<VisualisationNode>> postProcess(List<State> fixedMethodStates) {
+        //which type
+        //in which method
+        //which varName
+
+        Map<VisualisationNode, Set<VisualisationNode>> result = new HashMap<>();
 
         //for each of public methods results
         for (State fixedMethodState : fixedMethodStates) {
@@ -150,17 +154,17 @@ public class GraphService {
                 HeapObject from = entry.getKey();
                 Set<HeapObject> edges = entry.getValue();
                 Set<String> subclassesOfFrom = classFinderService.getSubclassesOf(from.getClazz());
-                Set<String> subclassesOfTo = new HashSet<>();
                 for (HeapObject to : edges) {
-                    subclassesOfTo.addAll(classFinderService.getSubclassesOf(to.getClazz()));
-                }
-
-                for (String subclassOfFrom : subclassesOfFrom) {
-                    for (String subclassOfTo : subclassesOfTo) {
-                        HeapObject unknownHoFrom = new HeapObject(ProgramPoint.UNKNOWN, subclassOfFrom);
-                        HeapObject unknownHoTo = new HeapObject(ProgramPoint.UNKNOWN, subclassOfTo);
-
-                        result = result.withEdge(unknownHoFrom, unknownHoTo);
+                    Set<String> subclassesOfTo = classFinderService.getSubclassesOf(to.getClazz());
+                    for (String classFrom : subclassesOfFrom) {
+                        VisualisationNode sourceNode = new VisualisationNode(classFrom, from.getLockMethodName(), from.getLockVarName());
+                        Set<VisualisationNode> targetNodes = new HashSet<>();
+                        for (String classTo : subclassesOfTo) {
+                            targetNodes.add(
+                                    new VisualisationNode(classTo, to.getLockMethodName(), to.getLockVarName())
+                            );
+                        }
+                        result.merge(sourceNode, targetNodes, Sets::union);
                     }
                 }
             }
@@ -174,4 +178,5 @@ public class GraphService {
         private final Graph graph;
         private final Set<HeapObject> roots;
     }
+
 }

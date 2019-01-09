@@ -28,6 +28,7 @@ public final class BranchStatementProcessor extends AbstractStatementProcessor<B
             return originalState;
         }
 
-        return mergeService.mergeStates(firstBranchState, secondBranchState, statement.getOffset());
+        return mergeService.mergeStates(
+                firstBranchState, secondBranchState, statement.getOffset(), statement.getEnclosingMethodName());
     }
 }

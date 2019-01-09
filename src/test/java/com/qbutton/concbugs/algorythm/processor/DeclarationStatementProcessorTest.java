@@ -37,6 +37,8 @@ class DeclarationStatementProcessorTest {
 
     private DeclarationStatementProcessor processor;
 
+    private static final String METHOD_NAME = "println";
+
     @BeforeEach
     void setUp() {
         processor = new DeclarationStatementProcessor(graphService);
@@ -48,9 +50,9 @@ class DeclarationStatementProcessorTest {
     void process_success() {
         //given
         String varName = "v1";
-        DeclarationStatement statement = new DeclarationStatement(32, varName, "int");
+        DeclarationStatement statement = new DeclarationStatement(32, varName, "int", METHOD_NAME);
 
-        HeapObject ho1 = new HeapObject(new ProgramPoint("3", 2), "java.lang.String");
+        HeapObject ho1 = new HeapObject(new ProgramPoint("3", 2), "java.lang.String", METHOD_NAME, "3");
         Set<HeapObject> ho1Set = ImmutableSet.of(ho1);
         List<HeapObject> ho1List = ImmutableList.of(ho1);
         Graph ho1Graph = new Graph(of(ho1, emptySet()));
@@ -75,7 +77,7 @@ class DeclarationStatementProcessorTest {
         assertThat(newEnv.size(), is(2));
         assertThat(newEnv.get(0), is(ho1EnvEntry));
         assertThat(newEnv.get(1),
-                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"))));
+                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int", METHOD_NAME, varName))));
     }
 
     @Test
@@ -83,7 +85,7 @@ class DeclarationStatementProcessorTest {
     void process_emptyState_success() {
         //given
         String varName = "v1";
-        DeclarationStatement statement = new DeclarationStatement(32, varName, "int");
+        DeclarationStatement statement = new DeclarationStatement(32, varName, "int", METHOD_NAME);
 
 
         Graph graph = new Graph(Collections.emptyMap());
@@ -106,6 +108,6 @@ class DeclarationStatementProcessorTest {
         List<EnvEntry> newEnv = newState.getEnvironment();
         assertThat(newEnv.size(), is(1));
         assertThat(newEnv.get(0),
-                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int"))));
+                is(new EnvEntry(varName, new HeapObject(new ProgramPoint(varName, 32), "int", METHOD_NAME, varName))));
     }
 }

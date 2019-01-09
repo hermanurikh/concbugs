@@ -11,10 +11,13 @@ public final class HeapObject implements Cloneable {
     private final ProgramPoint programPoint;
     private final String clazz;
 
+    private final String lockMethodName;
+    private final String lockVarName;
+
     @SuppressFBWarnings("CN_IDIOM_NO_SUPER_CALL")
     @Override
     public HeapObject clone() {
         ProgramPoint programPointClone = this.programPoint.clone();
-        return new HeapObject(programPointClone, clazz);
+        return new HeapObject(programPointClone, clazz, lockMethodName, lockVarName);
     }
 }

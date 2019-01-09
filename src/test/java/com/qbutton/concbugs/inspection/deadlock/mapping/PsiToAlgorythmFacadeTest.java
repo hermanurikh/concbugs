@@ -91,6 +91,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(result.getOffset()).isEqualTo(87);
             assertThat(result.getVarName()).isEqualTo("a");
             assertThat(result.getClazz()).isEqualTo("java.lang.String");
+            assertThat(result.getEnclosingMethodName()).isEqualTo("declaration");
         }
 
         @Test
@@ -102,7 +103,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(result.getOffset()).isEqualTo(70);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getClazz()).isEqualTo("java.lang.String");
-
+            assertThat(result.getEnclosingMethodName()).isEqualTo("declaration");
         }
     }
 
@@ -134,6 +135,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(result.getOffset()).isEqualTo(99);
             assertThat(result.getVarName()).isEqualTo("b");
             assertThat(result.getClazz()).isEqualTo("java.util.Date");
+            assertThat(result.getEnclosingMethodName()).isEqualTo("assignment");
         }
 
         @Test
@@ -146,6 +148,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(innerAssignment.getOffset()).isEqualTo(106);
             assertThat(innerAssignment.getVarName()).isEqualTo("b");
             assertThat(innerAssignment.getClazz()).isEqualTo("java.util.Date");
+            assertThat(innerAssignment.getEnclosingMethodName()).isEqualTo("assignment");
         }
     }
 
@@ -167,6 +170,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             CrossAssignmentStatement stmt2 = (CrossAssignmentStatement) result.getStmt2();
             assertThat(stmt2.getVarName()).isEqualTo("c");
             assertThat(stmt2.getRightValueName()).isEqualTo("d");
+            assertThat(result.getEnclosingMethodName()).isEqualTo("branch");
         }
 
         @Test
@@ -180,6 +184,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(stmt1.getVarName()).isEqualTo("a");
             assertThat(stmt1.getRightValueName()).isEqualTo("b");
             assertThat(result.getStmt2()).isNull();
+            assertThat(result.getEnclosingMethodName()).isEqualTo("branch");
         }
     }
 
@@ -199,6 +204,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             CrossAssignmentStatement stmt1 = (CrossAssignmentStatement) result.getInnerStatement();
             assertThat(stmt1.getVarName()).isEqualTo("b");
             assertThat(stmt1.getRightValueName()).isEqualTo("c");
+            assertThat(result.getEnclosingMethodName()).isEqualTo("synchronized_test");
         }
 
         @Test
@@ -212,6 +218,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(innerSynchronized.getClassName()).isEqualTo("Synchronized_2");
             assertThat(innerSynchronized.getVarName()).isEqualTo("this");
             assertNull(innerSynchronized.getInnerStatement());
+            assertThat(innerSynchronized.getEnclosingMethodName()).isEqualTo("foo");
         }
     }
 
@@ -260,6 +267,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(declarationStatement.getOffset()).isEqualTo(115);
             assertThat(declarationStatement.getVarName()).isEqualTo("b");
             assertThat(declarationStatement.getClazz()).isEqualTo("java.util.Date");
+            assertThat(declarationStatement.getEnclosingMethodName()).isEqualTo("testWait");
         }
 
         @Test
@@ -364,16 +372,19 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(0).getVarName()).isEqualTo("a");
             assertThat(actualStatements.get(0).getOffset()).isEqualTo(130);
             assertThat(((DeclarationStatement) actualStatements.get(0)).getClazz()).isEqualTo("Complex");
+            assertThat(((DeclarationStatement) actualStatements.get(0)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(1), DeclarationStatement.class);
             assertThat(actualStatements.get(1).getVarName()).isEqualTo("a");
             assertThat(actualStatements.get(1).getOffset()).isEqualTo(155);
             assertThat(((DeclarationStatement) actualStatements.get(1)).getClazz()).isEqualTo("Complex");
+            assertThat(((DeclarationStatement) actualStatements.get(1)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(2), DeclarationStatement.class);
             assertThat(actualStatements.get(2).getVarName()).isEqualTo("b");
             assertThat(actualStatements.get(2).getOffset()).isEqualTo(204);
             assertThat(((DeclarationStatement) actualStatements.get(2)).getClazz()).isEqualTo("Complex");
+            assertThat(((DeclarationStatement) actualStatements.get(2)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(3), CrossAssignmentStatement.class);
             assertThat(actualStatements.get(3).getVarName()).isEqualTo("b");
@@ -384,6 +395,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(4).getVarName()).isEqualTo("a");
             assertThat(actualStatements.get(4).getOffset()).isEqualTo(363);
             assertThat(((DeclarationStatement) actualStatements.get(4)).getClazz()).isEqualTo("Complex.ComplexImpl");
+            assertThat(((DeclarationStatement) actualStatements.get(4)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(5), CrossAssignmentStatement.class);
             assertThat(actualStatements.get(5).getVarName()).isEqualTo("b");
@@ -399,16 +411,20 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(7).getVarName()).isEqualTo("c");
             assertThat(actualStatements.get(7).getOffset()).isEqualTo(425);
             assertThat(((InnerAssignmentStatement) actualStatements.get(7)).getClazz()).isEqualTo("int");
+            assertThat(((InnerAssignmentStatement) actualStatements.get(7)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(8), InnerAssignmentStatement.class);
             assertThat(actualStatements.get(8).getVarName()).isEqualTo("c");
             assertThat(actualStatements.get(8).getOffset()).isEqualTo(475);
             assertThat(((InnerAssignmentStatement) actualStatements.get(8)).getClazz()).isEqualTo("int");
+            assertThat(((InnerAssignmentStatement) actualStatements.get(8)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(9), BranchStatement.class);
             assertThat(actualStatements.get(9).getOffset()).isEqualTo(550);
             assertInstanceOf(((BranchStatement) actualStatements.get(9)).getStmt1(), MethodStatement.class);
             assertInstanceOf(((BranchStatement) actualStatements.get(9)).getStmt2(), MethodStatement.class);
+            assertThat(((BranchStatement) actualStatements.get(9)).getEnclosingMethodName()).isEqualTo("test1");
+
             MethodStatement branchMethodStatement1 = (MethodStatement) ((BranchStatement) actualStatements.get(9)).getStmt1();
             MethodStatement branchMethodStatement2 = (MethodStatement) ((BranchStatement) actualStatements.get(9)).getStmt2();
             assertThat(branchMethodStatement1.getReturnType()).isEqualTo("Date");
@@ -420,6 +436,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(10).getOffset()).isEqualTo(721);
             assertInstanceOf(((BranchStatement) actualStatements.get(10)).getStmt1(), MethodStatement.class);
             assertNull(((BranchStatement) actualStatements.get(10)).getStmt2());
+            assertThat(((BranchStatement) actualStatements.get(10)).getEnclosingMethodName()).isEqualTo("test1");
             MethodStatement newBranchMethodStatement = (MethodStatement) ((BranchStatement) actualStatements.get(10)).getStmt1();
             assertThat(newBranchMethodStatement.getReturnType()).isEqualTo("Date");
             assertThat(newBranchMethodStatement.getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
@@ -427,6 +444,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertInstanceOf(actualStatements.get(11), BranchStatement.class);
             assertThat(actualStatements.get(11).getOffset()).isEqualTo(834);
             assertInstanceOf(((BranchStatement) actualStatements.get(11)).getStmt1(), MethodStatement.class);
+            assertThat(((BranchStatement) actualStatements.get(11)).getEnclosingMethodName()).isEqualTo("test1");
             assertNull(((BranchStatement) actualStatements.get(11)).getStmt2());
             MethodStatement newBranchMethodStatement2 = (MethodStatement) ((BranchStatement) actualStatements.get(11)).getStmt1();
             assertThat(newBranchMethodStatement2.getReturnType()).isEqualTo("Date");
@@ -436,6 +454,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(12).getOffset()).isEqualTo(969);
             assertThat(actualStatements.get(12).getVarName()).isEqualTo("a");
             assertInstanceOf(((SynchronizedStatement) actualStatements.get(12)).getInnerStatement(), MethodStatement.class);
+            assertThat(((SynchronizedStatement) actualStatements.get(12)).getEnclosingMethodName()).isEqualTo("test1");
             MethodStatement newSynchronizedMethodStatement = (MethodStatement) ((SynchronizedStatement) actualStatements.get(12)).getInnerStatement();
             assertThat(newSynchronizedMethodStatement.getReturnType()).isEqualTo("Date");
             assertThat(newSynchronizedMethodStatement.getMethodDeclarations().get(0)).isEqualTo(test2MethodDeclaration);
@@ -450,6 +469,7 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(14).getVarName()).isEqualTo("newDate");
             assertThat(actualStatements.get(14).getOffset()).isEqualTo(1247);
             assertThat(((DeclarationStatement) actualStatements.get(14)).getClazz()).isEqualTo("Date");
+            assertThat(((DeclarationStatement) actualStatements.get(14)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(15), MethodStatement.class);
             assertThat(actualStatements.get(15).getVarName()).isEqualTo("newDate");
@@ -470,11 +490,13 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
             assertThat(actualStatements.get(18).getVarName()).isEqualTo("ac");
             assertThat(actualStatements.get(18).getOffset()).isEqualTo(1373);
             assertThat(((DeclarationStatement) actualStatements.get(18)).getClazz()).isEqualTo("int");
+            assertThat(((DeclarationStatement) actualStatements.get(18)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(19), DeclarationStatement.class);
             assertThat(actualStatements.get(19).getVarName()).isEqualTo("ad");
             assertThat(actualStatements.get(19).getOffset()).isEqualTo(1377);
             assertThat(((DeclarationStatement) actualStatements.get(19)).getClazz()).isEqualTo("int");
+            assertThat(((DeclarationStatement) actualStatements.get(19)).getEnclosingMethodName()).isEqualTo("test1");
 
             assertInstanceOf(actualStatements.get(20), MethodStatement.class);
             assertThat(actualStatements.get(20).getVarName()).isEqualTo("newDate");
@@ -535,6 +557,6 @@ class PsiToAlgorythmFacadeTest extends LightCodeInsightFixtureTestCase {
         );
         getDateMethodDeclaration = new MethodDeclaration("getDate", variables,
                 new SynchronizedStatement(1902, "this",
-                        new CrossAssignmentStatement(1922, "a", "b"), "Complex"), 1902);
+                        new CrossAssignmentStatement(1922, "a", "b"), "Complex", "getDate"), 1902);
     }
 }
